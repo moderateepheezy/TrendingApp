@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context="org.trends.trendingapp.activities.TweetsActivity"
+        android:id="@+id/refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/landingPage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#333333"
+            android:paddingBottom="8dp">
+
+            <ListView
+                android:id="@+id/list"
+                android:dividerHeight="1dp"
+                android:divider="@android:color/darker_gray"
+                android:cacheColorHint="@android:color/transparent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@id/android:empty"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:gravity="center"
+                />
+        </RelativeLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#dfd6d6"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:paddingBottom="10dp"
+        android:layout_marginTop="-10dp"
+        android:src="@drawable/tw__composer_logo_blue"/>
+
+    <ImageView
+        android:id="@+id/image_user_logo"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerHorizontal="true"
+        android:src="@mipmap/ic_launcher"
+        android:background="@mipmap/ic_launcher"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/image_user_logo"
+        android:layout_marginLeft="6dp"
+        android:padding="5dp"
+        android:orientation="vertical">
+        <org.trends.trendingapp.customviews.RobotoTextView
+            android:id="@+id/text_user"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="User"
+            android:textColor="@color/colorAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textImage"/>
+        <org.trends.trendingapp.customviews.RobotoTextView
+            android:id="@+id/text_tweet"
+            android:text="text"
+            android:autoLink="web"
+            android:layout_gravity="center_vertical"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/black"
+            app:foundFont="2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+</RelativeLayout>
