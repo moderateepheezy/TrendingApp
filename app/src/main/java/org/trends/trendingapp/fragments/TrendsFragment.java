@@ -1,5 +1,6 @@
 package org.trends.trendingapp.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -10,6 +11,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.transition.TransitionInflater;
@@ -21,6 +23,7 @@ import com.squareup.otto.Subscribe;
 
 import org.trends.trendingapp.R;
 import org.trends.trendingapp.activities.TweetsActivity;
+import org.trends.trendingapp.activities.TweetsListActivity;
 import org.trends.trendingapp.adapters.TrendsAdapter;
 import org.trends.trendingapp.models.Trends;
 import org.trends.trendingapp.services.TrendsAPIHelper;
@@ -45,7 +48,7 @@ public class TrendsFragment extends Fragment implements TrendsAdapter.EventListe
 
     public TrendsAdapter adapter;
 
-    private StaggeredGridLayoutManager linearLayoutManager;
+    private LinearLayoutManager linearLayoutManager;
 
 
     @Bind(R.id.landingPage)
@@ -131,7 +134,7 @@ public class TrendsFragment extends Fragment implements TrendsAdapter.EventListe
     private void initView(View v) {
         RealmResults<Trends> realmResults = getPostsFromDb();
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
-        linearLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         adapter = new TrendsAdapter(getActivity(), realmResults, true);
         adapter.setEventListener(this);
@@ -169,10 +172,11 @@ public class TrendsFragment extends Fragment implements TrendsAdapter.EventListe
             optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), view, view.getTransitionName());
         }
 
-        Intent intent = new Intent(getActivity(), TweetsActivity.class);
+        Intent intent = new Intent(getActivity(), TweetsListActivity.class);
         intent.putExtra(TweetsActivity.ARG_SEARCH_REQUEST, postsData.getQuery());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            startActivity(intent, optionsCompat.toBundle());
+           // startActivity(intent, optionsCompat.toBundle());
+            getActivity().startActivityForResult(intent, 1);
         }
 
     }
@@ -205,5 +209,6 @@ public class TrendsFragment extends Fragment implements TrendsAdapter.EventListe
                     }
                 }).show();
     }
+
 
 }

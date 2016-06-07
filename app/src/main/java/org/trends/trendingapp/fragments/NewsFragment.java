@@ -139,9 +139,14 @@ public class NewsFragment extends Fragment implements NewsAdapter.EventListener{
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        String x = loadChangestate("bella") +loadChangestate("punch") + loadChangestate("linda");
+                        NewsAPIHelper.getPosts(fbid, x, getActivity());
+                    }
+                }, 3000);
                 refresh.setRefreshing(false);
-                String x = loadChangestate("bella") +loadChangestate("punch") + loadChangestate("linda");
-                NewsAPIHelper.getPosts(fbid, x, getActivity());
             }
         });
         initView(v);

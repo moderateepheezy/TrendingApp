@@ -181,7 +181,6 @@ public class NewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, NewsAda
 
         String[] parts = dateString.split("T");
         String part1 = parts[0]; // 004
-        String part2 = parts[1]; // 03455
 
         return part1;
     }

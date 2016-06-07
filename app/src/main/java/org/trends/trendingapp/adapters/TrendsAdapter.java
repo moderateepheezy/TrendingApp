@@ -12,6 +12,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 
+import com.roughike.swipeselector.SwipeItem;
+import com.roughike.swipeselector.SwipeSelector;
+
 import org.trends.trendingapp.R;
 import org.trends.trendingapp.activities.MainActivity;
 import org.trends.trendingapp.customviews.RobotoTextView;
@@ -61,7 +64,17 @@ public class TrendsAdapter extends RealmBaseRecyclerViewAdapter<Trends, TrendsAd
         holder.tweet_name.setText(postsData.getName());
         holder.tweet_volume.setText(String.valueOf(postsData.getTweet_volume() + " tweets"));
 
-        holder.last_tweet.setText(postsData.getTweets_sata().get(1).getTweet());
+       // holder.last_tweet.setText(postsData.getTweets_sata().get(1).getTweet());
+
+        holder.swipeSelector.setItems(
+                // The first argument is the value for that item, and should in most cases be unique for the
+                // current SwipeSelector, just as you would assign values to radio buttons.
+                // You can use the value later on to check what the selected item was.
+                // The value can be any Object, here we're using ints.
+                new SwipeItem(0, postsData.getTweets_sata().get(0).getUser(), postsData.getTweets_sata().get(0).getTweet()),
+                new SwipeItem(1, postsData.getTweets_sata().get(1).getUser(), postsData.getTweets_sata().get(1).getTweet()),
+                new SwipeItem(2, postsData.getTweets_sata().get(2).getUser(), postsData.getTweets_sata().get(2).getTweet())
+        );
 
         /*Animation animation;
         animation = AnimationUtils.loadAnimation(context, R.anim.fade_in);
@@ -116,13 +129,15 @@ public class TrendsAdapter extends RealmBaseRecyclerViewAdapter<Trends, TrendsAd
         public RobotoTextView last_tweet;
         public RobotoTextView tweet_volume;
         public Button share;
+        SwipeSelector swipeSelector;
 
         PostsViewHolder(View itemView) {
             super(itemView);
+            swipeSelector = (SwipeSelector) itemView.findViewById(R.id.swipeSelector);
             postContentHolder = (LinearLayout) itemView.findViewById(R.id.post_content_holder);
             tweet_name = (RobotoTextView) itemView.findViewById(R.id.tweet_name);
             share = (Button) itemView.findViewById(R.id.share);
-            last_tweet = (RobotoTextView) itemView.findViewById(R.id.last_tweet);
+         //   last_tweet = (RobotoTextView) itemView.findViewById(R.id.last_tweet);
             tweet_volume = (RobotoTextView) itemView.findViewById(R.id.tweet_volume);
         }
     }

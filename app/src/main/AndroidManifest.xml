@@ -28,12 +28,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:theme="@style/BaseTheme"
-            android:name=".activities.SignupActivity" />
+            android:name=".activities.SignupActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/BaseTheme" />
         <activity
             android:name="com.thefinestartist.finestwebview.FinestWebViewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="sensor"
+            android:screenOrientation="portrait"
             android:theme="@style/FinestWebViewTheme.Light" />
         <activity
             android:name="com.facebook.FacebookActivity"
@@ -43,18 +44,28 @@
         <activity
             android:name=".activities.EventDetailedActivity"
             android:parentActivityName=".activities.MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/action_settings"
+            android:screenOrientation="portrait"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/BaseTheme" />
         <activity
-            android:theme="@style/BaseTheme"
-            android:name=".activities.TweetsActivity"/>
+            android:name=".activities.TweetsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/BaseTheme" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="4bb99d7876a15bdedc8449ae1f762a257109d92e" />
+
+        <activity
+            android:theme="@style/BaseTheme"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".activities.MainActivity"
+            android:name=".activities.TweetsListActivity"/>
     </application>
 
 </manifest>

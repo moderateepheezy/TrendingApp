@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/tools"
     android:id="@+id/refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/landingPage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -21,19 +22,14 @@
             android:id="@+id/menu_red"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
+            app:layout_anchorGravity="bottom|right|end"
             android:paddingRight="10dp"
-            android:paddingBottom="10dp"
             android:paddingLeft="10dp"
-            fab:menu_labels_ellipsize="end"
             fab:menu_labels_singleLine="true"
             fab:menu_backgroundColor="#ccffffff"
             fab:menu_colorNormal="@color/colorAccent"
             fab:menu_colorPressed="@color/pressedFab"
             fab:menu_colorRipple="@color/rippleFab"
-            fab:fab_showAnimation="@anim/show_from_bottom"
-            fab:fab_hideAnimation="@anim/hide_to_bottom"
             fab:menu_fab_label="Menu label">
 
             <com.github.clans.fab.FloatingActionButton
@@ -61,5 +57,5 @@
                 fab:fab_label="Restore Button" />
 
         </com.github.clans.fab.FloatingActionMenu>
-    </RelativeLayout>
+    </FrameLayout>
 </android.support.v4.widget.SwipeRefreshLayout>
