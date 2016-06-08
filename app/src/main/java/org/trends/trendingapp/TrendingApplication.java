@@ -15,6 +15,7 @@ import org.trends.trendingapp.utils.AppConstants;
 import org.trends.trendingapp.utils.BusProvider;
 import org.trends.trendingapp.utils.DBHelper;
 import org.trends.trendingapp.utils.EventBusSingleton;
+import org.trends.trendingapp.utils.MyPreferenceManager;
 
 import io.realm.Realm;
 import retrofit.RestAdapter;
@@ -34,6 +35,8 @@ public class TrendingApplication extends Application{
 
     private TwitterServiceProvider mTwitterService;
     private Bus buss = BusProvider.getInstance();
+
+    private MyPreferenceManager pref;
 
     // Hold reference to event bus.
     Bus bus = EventBusSingleton.getBus();
@@ -67,7 +70,7 @@ public class TrendingApplication extends Application{
         MultiDex.install(this);
     }
 
-    public static TrendingApplication getInstance() {
+    public static synchronized TrendingApplication getInstance() {
         return application;
     }
 
@@ -76,5 +79,13 @@ public class TrendingApplication extends Application{
     }
     public void setAppContext(Context mAppContext) {
         this.context = mAppContext;
+    }
+
+    public MyPreferenceManager getPrefManager() {
+        if (pref == null) {
+            pref = new MyPreferenceManager(this);
+        }
+
+        return pref;
     }
 }

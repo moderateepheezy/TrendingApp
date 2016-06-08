@@ -1,0 +1,110 @@
+{
+  "project_info": {
+    "project_number": "332316684995",
+    "project_id": "treadingnews"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332316684995:android:070001d1abbe91b3",
+        "android_client_info": {
+          "package_name": "com.kinvey.sample.signin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "332316684995-vs2vriidgj54b63u2354iubifpps7ebt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kinvey.sample.signin",
+            "certificate_hash": "EB01C4E1815584FC80D5B25BEBF7F1DBFFBEE41D"
+          }
+        },
+        {
+          "client_id": "332316684995-40s8qpec9c0jhsg0jqhubl3v0jsptkp3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANK34mwEmIeCG5YX3Q3z_CLwvPxxd3PuA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332316684995:android:892927b456f236d1",
+        "android_client_info": {
+          "package_name": "org.simpumind.com.loginwithsocial"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "332316684995-40s8qpec9c0jhsg0jqhubl3v0jsptkp3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANK34mwEmIeCG5YX3Q3z_CLwvPxxd3PuA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332316684995:android:1a2b8ee420eb3db7",
+        "android_client_info": {
+          "package_name": "org.trends.trendingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "332316684995-40s8qpec9c0jhsg0jqhubl3v0jsptkp3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANK34mwEmIeCG5YX3Q3z_CLwvPxxd3PuA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

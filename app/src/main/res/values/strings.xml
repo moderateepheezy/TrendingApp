@@ -14,4 +14,5 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="facebook_app_id">1012925262084258</string>
+    <string name="gcm_defaultSenderId">332316684995</string>
 </resources>

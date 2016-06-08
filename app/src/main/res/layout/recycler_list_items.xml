@@ -23,6 +23,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingTop="5dp"
                 android:background="?attr/selectableItemBackground">
 
                 <org.trends.trendingapp.customviews.RobotoTextView
@@ -40,10 +41,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="120dp"
-                    android:layout_marginTop="10dp"
-                    android:paddingRight="5dp"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
+                    android:layout_margin="5dp"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -54,7 +52,6 @@
                             android:id="@+id/rlv_name_view"
                             android:layout_width="100dp"
                             android:layout_height="100dp"
-                            android:layout_margin="5dp"
                             android:src="@drawable/tw_logo"
                             android:background="#bab4b4"/>
                     </LinearLayout>
@@ -69,18 +66,18 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
                             android:layout_marginRight="10dp"
                             android:orientation="horizontal">
                             <ImageView
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:id="@+id/sourceImg"/>
                             <org.trends.trendingapp.customviews.RobotoTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="2dp"
                                 android:id="@+id/sourceName"
+                                android:text="Source Name"
                                 android:textColor="@color/colorAccent"
                                 android:textSize="12sp"/>
                         </LinearLayout>
@@ -90,10 +87,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
-                            android:maxLength="30"
-                            android:lines="1"
                             android:ellipsize="end"
-                            android:maxLines="1"
+                            android:text="event name"
+                            android:maxLines="2"
                             app:foundFont="@integer/font_roboto_bold"
                             android:textColor="#0a7b9b"
                             />
@@ -126,25 +122,23 @@
                     android:layout_height="1dp"
                     android:background="#edecec"/>
 
-                <FrameLayout
+                <RelativeLayout
                     android:layout_width="fill_parent"
+                    android:background="#fff"
                     android:layout_height="wrap_content" >
                     <Button
                         android:id="@+id/share"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="right"
-                        android:background="#fff"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:background="@null"
                         android:text="SHARE"
-                        android:minHeight="0dp"
-                        android:minWidth="0dp"
-                        android:padding="5dp"
                         android:drawablePadding="5dp"
                         android:textColor="@color/black"
                         android:drawableRight="@android:drawable/ic_menu_share"
                         android:gravity="right|center_vertical" />
 
-                </FrameLayout>
+                </RelativeLayout>
 
 
             </LinearLayout>
