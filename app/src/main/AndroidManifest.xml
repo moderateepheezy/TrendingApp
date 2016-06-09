@@ -12,28 +12,6 @@
     <permission android:name="org.trends.trendingapp.permission.C2D_MESSAGE" android:protectionLevel="signature" />
     <uses-permission android:name="org.trends.trendingapp.permission.C2D_MESSAGE" />
 
-    <receiver
-        android:name="com.google.android.gms.gcm.GcmReceiver" android:exported="true"
-        android:permission="com.google.android.c2dm.permission.SEND" >
-        <intent-filter>
-            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-            <category android:name="org.trends.trendingapp" />
-        </intent-filter>
-    </receiver>
-    <service
-        android:name="org.trends.trendingapp.services.GCMRegistrationIntentService" android:exported="false" >
-        <intent-filter>
-            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-        </intent-filter>
-    </service>
-    <service android:name="org.trends.trendingapp.services.GCMTokenRefreshListenerService" android:exported="false">
-    <intent-filter>
-        <action android:name="com.google.android.gms.iid.InstanceID"/>
-    </intent-filter>
-</service>
-
-
     <application
         android:name=".TrendingApplication"
         android:allowBackup="true"
@@ -94,6 +72,30 @@
             android:screenOrientation="portrait"
             android:parentActivityName=".activities.MainActivity"
             android:name=".activities.TweetsListActivity"/>
+
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver" android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <category android:name="org.trends.trendingapp" />
+            </intent-filter>
+        </receiver>
+        <service
+            android:name=".gcm.GCMPushReceiverService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+            </intent-filter>
+
+        </service>
+        <service
+            android:name=".gcm.GCMRegistrationIntentService" android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

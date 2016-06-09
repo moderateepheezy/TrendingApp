@@ -2,6 +2,9 @@ package org.trends.trendingapp.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
+
+import org.trends.trendingapp.models.User;
 
 /**
  * Created by SimpuMind on 6/8/16.
@@ -28,6 +31,7 @@ public class MyPreferenceManager {
     private static final String KEY_USER_ID = "user_id";
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_USER_EMAIL = "user_email";
+    private static final String KEY_ACCESS_TOKEN = "access_token";
     private static final String KEY_NOTIFICATIONS = "notifications";
 
     // Constructor
@@ -35,6 +39,31 @@ public class MyPreferenceManager {
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
+    }
+
+
+    public void storeUser(User user) {
+        editor.putString(KEY_USER_ID, user.getId());
+        editor.putString(KEY_USER_NAME, user.getName());
+        editor.putString(KEY_USER_EMAIL, user.getEmail());
+        editor.putString(KEY_ACCESS_TOKEN, user.getAccess_token());
+        editor.commit();
+
+        Log.e(TAG, "User is stored in shared preferences. " + user.getName() + ", " + user.getEmail());
+    }
+
+    public User getUser() {
+        if (pref.getString(KEY_USER_ID, null) != null) {
+            String id, name, email, access_token;
+            id = pref.getString(KEY_USER_ID, null);
+            name = pref.getString(KEY_USER_NAME, null);
+            email = pref.getString(KEY_USER_EMAIL, null);
+            access_token = pref.getString(KEY_ACCESS_TOKEN, null);
+
+            User user = new User(id, name, email, access_token);
+            return user;
+        }
+        return null;
     }
 
     public void addNotification(String notification) {

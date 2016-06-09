@@ -1,10 +1,13 @@
 package org.trends.trendingapp.activities;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,15 +23,23 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.facebook.FacebookSdk;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import org.trends.trendingapp.R;
+import org.trends.trendingapp.TrendingApplication;
 import org.trends.trendingapp.adapters.MyPagerAdapter;
 import org.trends.trendingapp.customviews.RobotoTextView;
+import org.trends.trendingapp.models.User;
+import org.trends.trendingapp.gcm.GCMRegistrationIntentService;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+
+    private BroadcastReceiver mRegistrationBroadCastReceiver;
 
     private final String[] mTitles = {"News", "Events", "Trends"};
     private TabLayout tabLayout;
@@ -35,11 +47,8 @@ public class MainActivity extends AppCompatActivity
 
     String emails;
     String fullnames;
-    String picture;
     static String id;
-    public String fbid;
     public String access_tokens;
-    public SharedPreferences settings;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,21 +57,18 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        settings = getSharedPreferences("KEY_NAME",
-                MODE_PRIVATE);
-        fbid = settings.getString("fbid", "");
 
-        if(fbid.isEmpty()){
+        User user = TrendingApplication.getInstance().getPrefManager().getUser();
+
+        if (TrendingApplication.getInstance().getPrefManager().getUser() == null) {
             SignupActivity.checkLogin();
-            Intent i = new Intent(getApplicationContext(), SignupActivity.class);
-            startActivity(i);
+            startActivity(new Intent(this, SignupActivity.class));
             finish();
         }else {
-            emails = settings.getString("fbemail", "");
-            fullnames = settings.getString("fbname", "");
-            id = settings.getString("fbid", "");
-            picture = settings.getString("fbimage", "");
-            access_tokens = settings.getString("access_token", "");
+            emails = user.getEmail();
+            fullnames = user.getName();
+            id = user.getId();
+            access_tokens = user.getAccess_token();
         }
 
         initViewPager();
@@ -93,6 +99,60 @@ public class MainActivity extends AppCompatActivity
         fb_username.setText(fullnames);
         fb_email.setText(emails);
 
+
+        mRegistrationBroadCastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //Check type of intent filter
+                if(intent.getAction().endsWith(GCMRegistrationIntentService.REGISTRATION_SUCCES)){
+                    String token  = intent.getStringExtra("token");
+                    Toast.makeText(getApplicationContext(), "GCM Token" + token, Toast.LENGTH_SHORT).show();
+                }else if(intent.getAction().equals(GCMRegistrationIntentService.REGISTRATION_ERROR)){
+                    //Registration error
+                    Toast.makeText(getApplicationContext(), "GCM Registtion Error", Toast.LENGTH_SHORT).show();
+                }else{
+
+                }
+            }
+        };
+
+        //Check status of google play service in device
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
+        if(ConnectionResult.SUCCESS != resultCode){
+            //Check type of error
+            if(GooglePlayServicesUtil.isUserRecoverableError(resultCode)){
+                Toast.makeText(getApplicationContext(), "google play service is not installed/enabled in this device!", Toast.LENGTH_SHORT).show();
+                //No notification
+                GooglePlayServicesUtil.showErrorNotification(resultCode, getApplicationContext());
+            }else{
+                Toast.makeText(getApplicationContext() , "This device does not support Google Play Service!", Toast.LENGTH_SHORT).show();
+            }
+        }else{
+            //Start Service
+            Intent itent = new Intent(this, GCMRegistrationIntentService.class);
+            startService(itent);
+        }
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.w("MainActivityLog", "onResume");
+        LocalBroadcastManager.getInstance(this).
+                registerReceiver(mRegistrationBroadCastReceiver,
+                        new IntentFilter(GCMRegistrationIntentService.REGISTRATION_SUCCES));
+        LocalBroadcastManager.getInstance(this).
+                registerReceiver(mRegistrationBroadCastReceiver,
+                        new IntentFilter(GCMRegistrationIntentService.REGISTRATION_ERROR));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.w("MainActivityLog", "onPause");
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadCastReceiver);
     }
 
     @Override

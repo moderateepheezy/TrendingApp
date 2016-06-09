@@ -20,6 +20,8 @@ import com.facebook.login.LoginResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.trends.trendingapp.R;
+import org.trends.trendingapp.TrendingApplication;
+import org.trends.trendingapp.models.User;
 
 import java.util.Arrays;
 
@@ -28,7 +30,7 @@ public class SignupActivity extends AppCompatActivity {
     public static CallbackManager callbackmanager;
 
     private Button fbbutton;
-    private String facebook_id, f_name,  profile_image, email_id;
+    private String facebook_id, f_name, email_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,19 +71,12 @@ public class SignupActivity extends AppCompatActivity {
                             facebook_id = object.getString("id");
                             f_name = object.getString("name");
                             email_id = object.getString("email");
-                            profile_image = object.getString("picture");
-                            //Start new activity or use this info in your project.
-                            //Log.d("Hessd", gender + "ss");
-                            SharedPreferences settings = getApplicationContext().getSharedPreferences("KEY_NAME",
-                                    getApplicationContext().MODE_PRIVATE);
-                            SharedPreferences.Editor editor = settings.edit();
-                            editor.putString("fbid", facebook_id);
-                            editor.putString("fbname", f_name);
-                            editor.putString("fbemail", email_id);
-                            editor.putString("fbimage", profile_image);
-                            editor.putString("access_token", login_result.getAccessToken().getToken());
-                            editor.commit();
-                            editor.apply();
+
+                            User user = new User(facebook_id,
+                                    f_name,
+                                    email_id, login_result.getAccessToken().getToken());
+
+                            TrendingApplication.getInstance().getPrefManager().storeUser(user);
 
                             Intent i = new Intent(SignupActivity.this, MainActivity.class);
                             //progress.dismiss();
