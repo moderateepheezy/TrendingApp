@@ -1,4 +1,4 @@
-package org.trends.trendingapp.services;
+package org.trends.trendingapp.gcm;
 
 import android.content.Intent;
 
