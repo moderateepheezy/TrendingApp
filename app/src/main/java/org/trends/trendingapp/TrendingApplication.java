@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 
+import com.crashlytics.android.Crashlytics;
 import com.squareup.otto.Bus;
 
 import com.twitter.sdk.android.Twitter;
@@ -44,6 +45,9 @@ public class TrendingApplication extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+
+        Fabric.with(this, new Crashlytics(), new Twitter(authConfig));
         application = this;
         context = this.getApplicationContext();
         this.setAppContext(getApplicationContext());

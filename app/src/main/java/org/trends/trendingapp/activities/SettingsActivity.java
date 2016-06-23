@@ -14,6 +14,7 @@ public class SettingsActivity extends AppCompatActivity {
     SwitchCompat linda;
     SwitchCompat bella;
     SwitchCompat punch;
+    SwitchCompat pulse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,15 +26,24 @@ public class SettingsActivity extends AppCompatActivity {
         linda = (SwitchCompat) findViewById(R.id.lindaSwitch);
         bella = (SwitchCompat) findViewById(R.id.bellaSwitch);
         punch = (SwitchCompat) findViewById(R.id.punchSwitch);
+        pulse = (SwitchCompat) findViewById(R.id.pulseSwitch);
 
         loadChangestate("linda", linda);
         loadChangestate("bella", bella);
         loadChangestate("punch", punch);
+        loadChangestate("pulse", pulse);
 
         punch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 setChangestate("punch", isChecked);
+            }
+        });
+
+        pulse.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                setChangestate("pulse", isChecked);
             }
         });
 

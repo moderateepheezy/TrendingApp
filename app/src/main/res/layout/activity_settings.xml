@@ -29,12 +29,22 @@
                 android:layout_margin="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:text="Bella Nija" />
+
+                    <ImageView
+                        android:layout_alignParentStart="true"
+                        android:layout_width="50dp"
+                        android:id="@+id/bellaIcon"
+                        android:src="@drawable/bella"
+                        android:layout_height="50dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="7dp"
+                        android:layout_toRightOf="@+id/bellaIcon"
+                        android:layout_centerVertical="true"
+                        android:textSize="19sp"
+                        android:text="Bella Nija" />
+
 
                 <android.support.v7.widget.SwitchCompat
                     android:layout_alignParentEnd="true"
@@ -42,20 +52,35 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/bellaSwitch"
-                    android:gravity="center"
+                    android:gravity="center_horizontal"
                     android:checked="true"
+                    android:layout_centerVertical="true"
                     app:switchPadding="5dp" />
             </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey"/>
 
             <RelativeLayout
                 android:layout_margin="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_alignParentStart="true"
+                    android:layout_width="50dp"
+                    android:id="@+id/lindaIcon"
+                    android:src="@drawable/lib"
+                    android:layout_height="50dp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="7dp"
+                    android:layout_toRightOf="@+id/lindaIcon"
                     android:layout_centerVertical="true"
+                    android:textSize="19sp"
                     android:text="Linda Ikeji" />
 
                 <android.support.v7.widget.SwitchCompat
@@ -63,17 +88,31 @@
                     android:layout_width="wrap_content"
                     android:id="@+id/lindaSwitch"
                     android:checked="true"
+                    android:layout_centerVertical="true"
                     android:layout_height="wrap_content" />
             </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey"/>
             <RelativeLayout
                 android:layout_margin="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_alignParentStart="true"
+                    android:layout_width="50dp"
+                    android:id="@+id/punchIcon"
+                    android:src="@drawable/punch"
+                    android:layout_height="50dp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="7dp"
+                    android:layout_toRightOf="@+id/punchIcon"
                     android:layout_centerVertical="true"
+                    android:textSize="19sp"
                     android:text="Punch" />
 
                 <android.support.v7.widget.SwitchCompat
@@ -81,6 +120,39 @@
                     android:layout_width="wrap_content"
                     android:id="@+id/punchSwitch"
                     android:checked="true"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey"/>
+            <RelativeLayout
+                android:layout_margin="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_alignParentStart="true"
+                    android:layout_width="50dp"
+                    android:id="@+id/pulseIcon"
+                    android:src="@drawable/pulse_logo"
+                    android:layout_height="50dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="7dp"
+                    android:layout_toRightOf="@+id/pulseIcon"
+                    android:layout_centerVertical="true"
+                    android:textSize="19sp"
+                    android:text="Pulse.com" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:layout_alignParentEnd="true"
+                    android:layout_width="wrap_content"
+                    android:id="@+id/pulseSwitch"
+                    android:checked="true"
+                    android:layout_centerVertical="true"
                     android:layout_height="wrap_content" />
             </RelativeLayout>
 

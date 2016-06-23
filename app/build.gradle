@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         applicationId "org.trends.trendingapp"
-        minSdkVersion 17
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -67,7 +67,6 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
     /*For database operations*/
     compile 'io.realm:realm-android:0.85.0'
-    compile 'com.github.clans:fab:1.6.3'
     /*For network Operations*/
     compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
@@ -77,8 +76,13 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'net.oauth.core:oauth:20100527'
+    compile 'com.gordonwong:material-sheet-fab:1.2.1'
     compile('com.twitter.sdk.android:twitter:1.13.1@aar') {
         transitive = true;
     }
     compile 'com.google.android.gms:play-services:8.3.0'
+    compile 'com.github.asyl.animation:arcanimator:1.0.0'
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.7@aar') {
+        transitive = true;
+    }
 }

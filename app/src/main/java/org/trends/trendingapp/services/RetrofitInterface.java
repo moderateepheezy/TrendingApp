@@ -1,6 +1,7 @@
 package org.trends.trendingapp.services;
 
 
+import org.json.JSONObject;
 import org.trends.trendingapp.models.TrendList;
 import org.trends.trendingapp.models.EventListItem;
 import org.trends.trendingapp.models.NewsTrendList;
@@ -8,6 +9,7 @@ import org.trends.trendingapp.models.TweetList;
 import org.trends.trendingapp.utils.AppConstants;
 
 import retrofit.Callback;
+import retrofit.client.Response;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
@@ -28,6 +30,14 @@ public interface RetrofitInterface {
 
     @GET("/demo/yql/users/{user_id}/news/preferences")
     void getNewsPosts(@Path("user_id")String user_id, @Query("value")String preference, Callback<NewsTrendList> cb);
+
+
+    @FormUrlEncoded
+    @POST("/api/v1/users/")
+    void setUserGCMToken(
+            @Field("registration_id")String token,
+                @Field("application_name")String app_name,
+            Callback<Response> callback);
 
     @GET(AppConstants.TWITTER_HASHTAG_SEARCH_CODE )
     void getTweetList(

@@ -14,5 +14,9 @@
     <color name="grey">#DDDDDD</color>
     <color name="light_grey">#EEEEEE</color>
     <color name="white_transparent">#99FFFFFF</color>
-    <color name="black">#000</color>
+    <color name="black">#000</color>v
+
+    <color name="background_snackbar">#323232</color>
+
+    <color name="background_card">#fff</color>
 </resources>

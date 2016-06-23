@@ -12,6 +12,8 @@ public class AppConstants {
 
     public static final String TWEET_QUERY = "tweet_query";
 
+    public static boolean appendNotificationMessages = true;
+
 
     public final static String CONSUMER_KEY = "RGj7cK1LtaCBYXpp32HZP7MhW";
 

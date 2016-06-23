@@ -13,6 +13,7 @@ public class NewsTrend extends RealmObject {
     private String timestamp;
     private Integer comments;
     private String type;
+    private String content;
 
 
     /* Requires an empty constructor */
@@ -26,6 +27,7 @@ public class NewsTrend extends RealmObject {
         this.type = postsData.getType();
         this.comments = postsData.getComments();
         this.image = postsData.getImage();
+        this.content = postsData.getContent();
     }
 
     /**
@@ -134,5 +136,13 @@ public class NewsTrend extends RealmObject {
      */
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

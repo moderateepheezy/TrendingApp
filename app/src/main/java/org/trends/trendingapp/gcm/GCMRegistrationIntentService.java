@@ -11,17 +11,16 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
 import org.trends.trendingapp.R;
+import org.trends.trendingapp.services.RetrofitInterface;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by SimpuMind on 6/8/16.
@@ -61,7 +60,7 @@ public class GCMRegistrationIntentService extends IntentService{
 
             //Only request to save token when token is new
             if(!"".equals(token) && !oldToken.equals(token)){
-                saveTokenToServer(token);
+                sendTokenToServer(token, "trending");
                 //save new token to shared reference
                 editor.putString(TAG, token);
                 editor.commit();
@@ -77,68 +76,41 @@ public class GCMRegistrationIntentService extends IntentService{
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 
-    private void saveTokenToServer(String token){
-        Map paramPost = new HashMap();
-        paramPost.put("action", "add");
-        paramPost.put("registrationId", token);
-        try{
-            String msgResult = getStringResultFromService_POST("http//...", paramPost);
-            Log.w("ServiceResponseMsg", msgResult);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
 
-    public String getStringResultFromService_POST(String serviceUrl, Map<String, String> params){
+    private void sendTokenToServer(String token, String app_name){
+        RestAdapter adapter = new RestAdapter.Builder()
+                .setEndpoint("https://radiant-dusk-70788.herokuapp.com") //Setting the Root URL
+                .build(); //Finally building the adapter
 
-        HttpURLConnection conn = null;
-        String line  = null;
-        URL url;
-        try{
-            url = new URL(serviceUrl);
-        }catch (MalformedURLException e){
-            throw new IllegalArgumentException("URL invalid");
-        }
-        StringBuilder bodyBuilder = new StringBuilder();
-        Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
-        //Construct the post body using    e parameter
-        while(iterator.hasNext()){
-            Map.Entry<String, String> param = iterator.next();
-            bodyBuilder.append(param.getKey()).append('=').append(param.getValue());
-            if(iterator.hasNext()){
-                bodyBuilder.append("&");
+        //Creating object for our interface
+        RetrofitInterface api = adapter.create(RetrofitInterface.class);
+
+        api.setUserGCMToken(token, app_name, new Callback<Response>() {
+            @Override
+            public void success(Response result, Response response) {
+                BufferedReader reader = null;
+
+                //An string to store output from the server
+                String output = "";
+
+                try {
+                    //Initializing buffered reader
+                    reader = new BufferedReader(new InputStreamReader(result.getBody().in()));
+
+                    //Reading the output in the string
+                    output = reader.readLine();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Log.w("RequesResponseTo Output", output);
             }
-        }
-        String body = bodyBuilder.toString(); //format same to arg1=val1&arg2=val2
-        Log.w("AccessService", "param:" + body);
-        byte[] bytes = body.getBytes();
-        try {
-            conn = (HttpURLConnection)url.openConnection();
-            conn.setDoOutput(true);
-            conn.setUseCaches(false);
-            conn.setFixedLengthStreamingMode(bytes.length);
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-            //Post the request
-            OutputStream outputStream = conn.getOutputStream();
-            outputStream.write(bytes);
-            outputStream.close();
 
-            //Handle the response
-            int status = conn.getResponseCode();
-            if(status!=200){
-                throw new IOException("Post failed with error code:" + status);
+            @Override
+            public void failure(RetrofitError error) {
+                Log.w("RequesResponseTo", error.toString());
             }
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder stringBuilder = new StringBuilder();
-            while ((line = bufferedReader.readLine()) != null){
-                stringBuilder.append(line + "\n");
-            }
-            return stringBuilder.toString();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        });
 
-        return null;
     }
 }

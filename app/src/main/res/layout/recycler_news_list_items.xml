@@ -41,7 +41,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
+                    android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:orientation="horizontal">
 
@@ -106,7 +106,6 @@
                             android:textColor="#606161"
                             />
 
-
                     </LinearLayout>
                 </LinearLayout>
             </RelativeLayout>
@@ -127,17 +126,71 @@
                     android:layout_width="fill_parent"
                     android:background="#fff"
                     android:layout_height="wrap_content" >
-                    <Button
-                        android:id="@+id/share"
+
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:background="@null"
-                        android:text="SHARE"
-                        android:drawablePadding="5dp"
-                        android:textColor="@color/black"
-                        android:drawableRight="@android:drawable/ic_menu_share"
-                        android:gravity="right|center_vertical" />
+                        android:gravity="center_vertical"
+                        android:layout_margin="5dp"
+                        android:orientation="horizontal">
+
+                        <CheckBox
+                            android:id="@+id/upvote"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:button="@drawable/checkbox_selector_thumb_up" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/upCount"
+                            android:text="0"
+                            android:layout_marginLeft="2dp"
+                            android:layout_marginRight="2dp"
+                            android:layout_gravity="center"/>
+
+                        <CheckBox
+                            android:id="@+id/downVote"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:button="@drawable/checkbox_selector_thumb_down" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/downCount"
+                            android:layout_marginLeft="2dp"
+                            android:layout_marginRight="2dp"
+                            android:text="0"
+                            android:layout_gravity="center"/>
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_alignParentEnd="true">
+
+                        <ImageButton
+                            android:id="@+id/bookmark"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/white"
+                            android:src="@drawable/heart_small"/>
+
+                        <ImageButton
+                            android:id="@+id/share"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/white"
+                            android:src="@drawable/share_small"/>
+
+                    </LinearLayout>
+
 
                 </RelativeLayout>
 

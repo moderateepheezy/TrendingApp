@@ -9,7 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 
 import com.roughike.swipeselector.SwipeItem;
@@ -30,8 +34,7 @@ public class TrendsAdapter extends RealmBaseRecyclerViewAdapter<Trends, TrendsAd
     public EventListener eventListener;
     private Handler handler;
 
-    int i = 0;
-
+    static boolean up, down = false;
 
     public TrendsAdapter(Context context, RealmResults<Trends> realmResults, boolean automaticUpdate) {
         super(context, realmResults, automaticUpdate);
@@ -71,9 +74,9 @@ public class TrendsAdapter extends RealmBaseRecyclerViewAdapter<Trends, TrendsAd
                 // current SwipeSelector, just as you would assign values to radio buttons.
                 // You can use the value later on to check what the selected item was.
                 // The value can be any Object, here we're using ints.
-                new SwipeItem(0, postsData.getTweets_sata().get(0).getUser(), postsData.getTweets_sata().get(0).getTweet()),
-                new SwipeItem(1, postsData.getTweets_sata().get(1).getUser(), postsData.getTweets_sata().get(1).getTweet()),
-                new SwipeItem(2, postsData.getTweets_sata().get(2).getUser(), postsData.getTweets_sata().get(2).getTweet())
+//               new SwipeItem(0, postsData.getTweets_sata().get(0).getUser(), postsData.getTweets_sata().get(0).getTweet()),
+  //             new SwipeItem(1, postsData.getTweets_sata().get(1).getUser(), postsData.getTweets_sata().get(1).getTweet()),
+    //           new SwipeItem(2, postsData.getTweets_sata().get(2).getUser(), postsData.getTweets_sata().get(2).getTweet())
         );
 
         /*Animation animation;
@@ -100,6 +103,42 @@ public class TrendsAdapter extends RealmBaseRecyclerViewAdapter<Trends, TrendsAd
             }
         });
 
+        holder.upvote.setTag(holder); // set tag to get clicked item view
+        holder.upvote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PostsViewHolder viewHolder =(PostsViewHolder) v.getTag();
+                if(holder.upvote.isChecked()){ // I assume upvote is checkbox
+                    viewHolder.upvote.setChecked(true);
+                    viewHolder.upCount.setText("1");
+                    viewHolder.downvote.setChecked(false);
+                    viewHolder.downCount.setText("0");
+                }
+                else{
+                    viewHolder.upvote.setChecked(false);
+                    viewHolder.upCount.setText("0");
+                }
+            }
+        });
+
+        holder.downvote.setTag(holder); // set tag to get clicked item view
+        holder.downvote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PostsViewHolder viewHolder =(PostsViewHolder) v.getTag();
+                if(holder.downvote.isChecked()){ // I assume upvote is checkbox
+                    viewHolder.downvote.setChecked(true);
+                    viewHolder.downCount.setText("1");
+                    viewHolder.upvote.setChecked(false);
+                    viewHolder.upCount.setText("0");
+                }
+                else{
+                    viewHolder.downvote.setChecked(false);
+                    viewHolder.downCount.setText("0");
+                }
+            }
+        });
+
     }
 
     @Override
@@ -122,23 +161,39 @@ public class TrendsAdapter extends RealmBaseRecyclerViewAdapter<Trends, TrendsAd
         return realmResults.size();
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
     public static class PostsViewHolder extends RecyclerView.ViewHolder {
         LinearLayout postContentHolder;
 
         public RobotoTextView tweet_name;
         public RobotoTextView last_tweet;
         public RobotoTextView tweet_volume;
-        public Button share;
         SwipeSelector swipeSelector;
+
+        public TextView upCount;
+        public TextView downCount;
+
+        public ImageButton share;
+        public CheckBox upvote;
+        public CheckBox downvote;
 
         PostsViewHolder(View itemView) {
             super(itemView);
             swipeSelector = (SwipeSelector) itemView.findViewById(R.id.swipeSelector);
             postContentHolder = (LinearLayout) itemView.findViewById(R.id.post_content_holder);
             tweet_name = (RobotoTextView) itemView.findViewById(R.id.tweet_name);
-            share = (Button) itemView.findViewById(R.id.share);
          //   last_tweet = (RobotoTextView) itemView.findViewById(R.id.last_tweet);
             tweet_volume = (RobotoTextView) itemView.findViewById(R.id.tweet_volume);
+
+            share = (ImageButton) itemView.findViewById(R.id.share);
+            upvote = (CheckBox) itemView.findViewById(R.id.upvote);
+            downvote = (CheckBox) itemView.findViewById(R.id.downVote);
+            upCount = (TextView) itemView.findViewById(R.id.upCount);
+            downCount = (TextView) itemView.findViewById(R.id.downCount);
         }
     }
 

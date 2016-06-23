@@ -21,13 +21,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
+import com.gordonwong.materialsheetfab.MaterialSheetFab;
+import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
 import com.squareup.otto.Subscribe;
-
+;
 import org.trends.trendingapp.R;
+import org.trends.trendingapp.TrendingApplication;
 import org.trends.trendingapp.adapters.NewsAdapter;
+import org.trends.trendingapp.customviews.Fab;
 import org.trends.trendingapp.models.NewsTrend;
+import org.trends.trendingapp.models.User;
 import org.trends.trendingapp.services.EventsAPIHelper;
 import org.trends.trendingapp.services.NewsAPIHelper;
 import org.trends.trendingapp.utils.EventBusSingleton;
@@ -44,7 +47,7 @@ import io.realm.RealmResults;
 /**
  * Created by SimpuMind on 5/20/16.
  */
-public class NewsFragment extends Fragment implements NewsAdapter.EventListener{
+public class NewsFragment extends Fragment implements  NewsAdapter.EventListener{
 
     private RecyclerView recyclerView;
     protected Realm realm;
@@ -55,18 +58,9 @@ public class NewsFragment extends Fragment implements NewsAdapter.EventListener{
 
     private LinearLayoutManager linearLayoutManager;
 
-    private FloatingActionMenu menuYellow;
-
-    private FloatingActionButton lindaFab;
-    private FloatingActionButton bellaFab;
-    private FloatingActionButton punchFab;
-
-    private List<FloatingActionMenu> menus = new ArrayList<>();
-    private Handler mUiHandler = new Handler();
+    String fbid;
 
 
-    public String fbid;
-    public SharedPreferences settings;
 
     @Bind(R.id.landingPage)
     public ViewGroup viewGroup;
@@ -88,11 +82,11 @@ public class NewsFragment extends Fragment implements NewsAdapter.EventListener{
         }
         ButterKnife.bind(getActivity());
 
-        settings = getActivity().getSharedPreferences("KEY_NAME",
-                getActivity().MODE_PRIVATE);
-        fbid = settings.getString("fbid", "");
+        User user = TrendingApplication.getInstance().getPrefManager().getUser();
 
-        String x = loadChangestate("bella") +loadChangestate("punch") + loadChangestate("linda");
+        fbid = user.getId();
+
+        String x = loadChangestate("bella") +loadChangestate("punch") + loadChangestate("linda") + loadChangestate("pulse");
 
         NewsAPIHelper.getPosts(fbid,x, getActivity());
 
@@ -105,48 +99,21 @@ public class NewsFragment extends Fragment implements NewsAdapter.EventListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.new_list_fragment, container, false);
 
-        menuYellow = (FloatingActionMenu) v.findViewById(R.id.menu_red );
-
-        lindaFab = (FloatingActionButton) v.findViewById(R.id.lindaFab);
-        bellaFab = (FloatingActionButton) v.findViewById(R.id.bellaFab);
-        punchFab = (FloatingActionButton) v.findViewById(R.id.punchFab);
-
-
-        final FloatingActionButton programFab1 = new FloatingActionButton(getActivity());
-        programFab1.setButtonSize(FloatingActionButton.SIZE_MINI);
-        programFab1.setLabelText("Any String here");
-        programFab1.setImageResource(R.drawable.ic_edit);
-        menuYellow.addMenuButton(programFab1);
-        programFab1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                programFab1.setLabelColors(ContextCompat.getColor(getActivity(), R.color.grey),
-                        ContextCompat.getColor(getActivity(), R.color.light_grey),
-                        ContextCompat.getColor(getActivity(), R.color.white_transparent));
-                programFab1.setLabelTextColor(ContextCompat.getColor(getActivity(), R.color.black));
-            }
-        });
-
-        ContextThemeWrapper context = new ContextThemeWrapper(getActivity(), R.style.MenuButtonsStyle);
-        FloatingActionButton programFab2 = new FloatingActionButton(context);
-        programFab2.setLabelText("Programmatically added button");
-        programFab2.setImageResource(R.drawable.ic_edit);
-
-        lindaFab.setEnabled(false);
-        menuYellow.setClosedOnTouchOutside(true);
-
         refresh = (SwipeRefreshLayout) v.findViewById(R.id.refresh);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new Handler().postDelayed(new Runnable() {
+                String x = loadChangestate("bella") +loadChangestate("punch") + loadChangestate("linda") + loadChangestate("pulse");
+                NewsAPIHelper.getPosts(fbid,x, getActivity());
+
+                (new Handler()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        String x = loadChangestate("bella") +loadChangestate("punch") + loadChangestate("linda");
-                        NewsAPIHelper.getPosts(fbid, x, getActivity());
+                        Log.d("Swipe", "Refreshing Number");
+                        refresh.setRefreshing(false);
                     }
                 }, 3000);
-                refresh.setRefreshing(false);
+
             }
         });
         initView(v);
@@ -172,13 +139,12 @@ public class NewsFragment extends Fragment implements NewsAdapter.EventListener{
 
     @Override
     public void onDestroy() {
-
         if (realm != null) {
             realm.close();
         }
-
         super.onDestroy();
     }
+
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -263,53 +229,8 @@ public class NewsFragment extends Fragment implements NewsAdapter.EventListener{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        menus.add(menuYellow);
-
-
-        lindaFab.setOnClickListener(clickListener);
-        bellaFab.setOnClickListener(clickListener);
-        punchFab.setOnClickListener(clickListener);
-
-        int delay = 400;
-        for (final FloatingActionMenu menu : menus) {
-            mUiHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    menu.showMenuButton(true);
-                }
-            }, delay);
-            delay += 150;
-        }
-
-        menuYellow.setOnMenuButtonClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (menuYellow.isOpened()) {
-                    Toast.makeText(getActivity(), menuYellow.getMenuButtonLabelText(), Toast.LENGTH_SHORT).show();
-                }
-
-                menuYellow.toggle(true);
-            }
-        });
-
         // createCustomAnimation();
     }
 
-    private View.OnClickListener clickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.lindaFab:
-                    break;
-                case R.id.bellaFab:
-                    bellaFab.setVisibility(View.GONE);
-                    break;
-                case R.id.punchFab:
-                    bellaFab.setVisibility(View.VISIBLE);
-                    break;
-            }
-        }
-    };
 
 }

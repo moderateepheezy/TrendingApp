@@ -38,10 +38,6 @@ public class TweetsListActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        TwitterAuthConfig authConfig = new TwitterAuthConfig("RGj7cK1LtaCBYXpp32HZP7MhW",
-                "EyZwvfAMSEBRIlVPWN6XDZ2yk4fKSnB1hOBTt4XAlZ8c3c32u5");
-        Fabric.with(this, new Twitter(authConfig));
-
         Intent intent = getIntent();
         request = intent.getStringExtra(ARG_SEARCH_REQUEST);
 

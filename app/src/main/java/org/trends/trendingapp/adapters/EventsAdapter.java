@@ -11,8 +11,12 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
@@ -29,6 +33,8 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
     public RealmResults<Datum> realmResults;
     public Context context;
     public EventListener eventListener;
+
+    static boolean up, down = false;
 
     public EventsAdapter(Context context, RealmResults<Datum> realmResults, boolean automaticUpdate) {
         super(context, realmResults, automaticUpdate);
@@ -53,7 +59,7 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
     }
 
     @Override
-    public void onBindViewHolder(PostsViewHolder holder, int position) {
+    public void onBindViewHolder(final PostsViewHolder holder, int position) {
 
         final Datum postsData = getItem(position);
 
@@ -102,6 +108,42 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
             }
         });
 
+        holder.upvote.setTag(holder); // set tag to get clicked item view
+        holder.upvote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PostsViewHolder viewHolder =(PostsViewHolder) v.getTag();
+                if(holder.upvote.isChecked()){ // I assume upvote is checkbox
+                    viewHolder.upvote.setChecked(true);
+                    viewHolder.upCount.setText("1");
+                    viewHolder.downvote.setChecked(false);
+                    viewHolder.downCount.setText("0");
+                }
+                else{
+                    viewHolder.upvote.setChecked(false);
+                    viewHolder.upCount.setText("0");
+                }
+            }
+        });
+
+        holder.downvote.setTag(holder); // set tag to get clicked item view
+        holder.downvote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PostsViewHolder viewHolder =(PostsViewHolder) v.getTag();
+                if(holder.downvote.isChecked()){ // I assume upvote is checkbox
+                    viewHolder.downvote.setChecked(true);
+                    viewHolder.downCount.setText("1");
+                    viewHolder.upvote.setChecked(false);
+                    viewHolder.upCount.setText("0");
+                }
+                else{
+                    viewHolder.downvote.setChecked(false);
+                    viewHolder.downCount.setText("0");
+                }
+            }
+        });
+
     }
 
     @Override
@@ -131,9 +173,15 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
         public RobotoTextView eventName;
         public RobotoTextView eventDescription;
         public ImageView mDisplayGeneratedImage;
-        public Button share;
         public RobotoTextView sourceName;
         public ImageView sourceImage;
+
+        public TextView upCount;
+        public TextView downCount;
+
+        public ImageButton share;
+        public CheckBox upvote;
+        public CheckBox downvote;
 
         PostsViewHolder(View itemView) {
             super(itemView);
@@ -142,14 +190,25 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
             eventName = (RobotoTextView) itemView.findViewById(R.id.event_name);
             eventDescription = (RobotoTextView) itemView.findViewById(R.id.event_description);
             mDisplayGeneratedImage = (ImageView) itemView.findViewById(R.id.rlv_name_view);
-            share = (Button) itemView.findViewById(R.id.share);
             sourceName = (RobotoTextView) itemView.findViewById(R.id.sourceName);
             sourceImage = (ImageView) itemView.findViewById(R.id.sourceImg);
+            share = (ImageButton) itemView.findViewById(R.id.share);
+            sourceName = (RobotoTextView) itemView.findViewById(R.id.sourceName);
+            sourceImage = (ImageView) itemView.findViewById(R.id.sourceImg);
+            upvote = (CheckBox) itemView.findViewById(R.id.upvote);
+            downvote = (CheckBox) itemView.findViewById(R.id.downVote);
+            upCount = (TextView) itemView.findViewById(R.id.upCount);
+            downCount = (TextView) itemView.findViewById(R.id.downCount);
         }
     }
 
     public interface EventListener {
         void onItemClick(final View view, Datum postsData);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     public String getSplitDate(String dateString){

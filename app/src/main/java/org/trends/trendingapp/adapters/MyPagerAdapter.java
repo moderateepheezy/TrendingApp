@@ -16,6 +16,11 @@ import java.util.ArrayList;
 public class MyPagerAdapter extends FragmentPagerAdapter {
     private String[] mTitles;
 
+    public static final int NUM_ITEMS = 3;
+    public static final int NEWS_POST = 0;
+    public static final int EVENT_POST = 1;
+    public static final int TREND_POST = 2;
+
     public MyPagerAdapter(FragmentManager fm,  String[] mTitles) {
         super(fm);
         this.mTitles = mTitles;
@@ -35,13 +40,13 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         Fragment f;
         switch (position) {
-            case 0:
+            case NEWS_POST:
                 f = new NewsFragment();
                 break;
-            case 1:
+            case EVENT_POST:
                 f = new EventsFragment();
                 break;
-            case 2:
+            case TREND_POST:
                 f = new TrendsFragment();
                 break;
             default:
