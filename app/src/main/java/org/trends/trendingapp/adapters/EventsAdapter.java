@@ -16,6 +16,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -53,7 +54,7 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
 
     @Override
     public PostsViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_list_items, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_events, viewGroup, false);
         PostsViewHolder mediaViewHolder = new PostsViewHolder(v);
         return mediaViewHolder;
     }
@@ -76,7 +77,7 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
         }
 
         holder.eventName.setText(decodedTitle);
-        holder.startEvent.setText(getSplitDate(eventDate));
+        holder.startEvent.setText(eventDate);
         holder.eventDescription.setText(postsData.getDescription());
         holder.sourceName.setText(postsData.getType());
         Glide.with(context)
@@ -99,48 +100,14 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
         holder.share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String shareBody =  postsData.getUrl();
+
                 Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
-                String shareBody = postsData.getUrl();
-                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, postsData.getName());
+                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Trending App");
                 sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-                context.startActivity(Intent.createChooser(sharingIntent, "Share via"));
-            }
-        });
-
-        holder.upvote.setTag(holder); // set tag to get clicked item view
-        holder.upvote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PostsViewHolder viewHolder =(PostsViewHolder) v.getTag();
-                if(holder.upvote.isChecked()){ // I assume upvote is checkbox
-                    viewHolder.upvote.setChecked(true);
-                    viewHolder.upCount.setText("1");
-                    viewHolder.downvote.setChecked(false);
-                    viewHolder.downCount.setText("0");
-                }
-                else{
-                    viewHolder.upvote.setChecked(false);
-                    viewHolder.upCount.setText("0");
-                }
-            }
-        });
-
-        holder.downvote.setTag(holder); // set tag to get clicked item view
-        holder.downvote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PostsViewHolder viewHolder =(PostsViewHolder) v.getTag();
-                if(holder.downvote.isChecked()){ // I assume upvote is checkbox
-                    viewHolder.downvote.setChecked(true);
-                    viewHolder.downCount.setText("1");
-                    viewHolder.upvote.setChecked(false);
-                    viewHolder.upCount.setText("0");
-                }
-                else{
-                    viewHolder.downvote.setChecked(false);
-                    viewHolder.downCount.setText("0");
-                }
+                context.startActivity(Intent.createChooser(sharingIntent, "Paylaş"));
             }
         });
 
@@ -167,38 +134,28 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
     }
 
     public static class PostsViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout postContentHolder;
 
-        public RobotoTextView startEvent;
-        public RobotoTextView eventName;
-        public RobotoTextView eventDescription;
+        RelativeLayout postContentHolder;
+
+        public TextView startEvent;
+        public TextView eventName;
+        public TextView eventDescription;
         public ImageView mDisplayGeneratedImage;
-        public RobotoTextView sourceName;
+        public TextView sourceName;
         public ImageView sourceImage;
 
-        public TextView upCount;
-        public TextView downCount;
-
-        public ImageButton share;
-        public CheckBox upvote;
-        public CheckBox downvote;
+        public ImageView share;
 
         PostsViewHolder(View itemView) {
             super(itemView);
-            postContentHolder = (LinearLayout) itemView.findViewById(R.id.post_content_holder);
-            startEvent = (RobotoTextView) itemView.findViewById(R.id.event_start);
-            eventName = (RobotoTextView) itemView.findViewById(R.id.event_name);
-            eventDescription = (RobotoTextView) itemView.findViewById(R.id.event_description);
+            postContentHolder = (RelativeLayout) itemView.findViewById(R.id.postContentHolder);
+            startEvent = (TextView) itemView.findViewById(R.id.event_start);
+            eventName = (TextView) itemView.findViewById(R.id.event_name);
+            eventDescription = (TextView) itemView.findViewById(R.id.event_description);
             mDisplayGeneratedImage = (ImageView) itemView.findViewById(R.id.rlv_name_view);
-            sourceName = (RobotoTextView) itemView.findViewById(R.id.sourceName);
+            sourceName = (TextView) itemView.findViewById(R.id.sourceName);
             sourceImage = (ImageView) itemView.findViewById(R.id.sourceImg);
-            share = (ImageButton) itemView.findViewById(R.id.share);
-            sourceName = (RobotoTextView) itemView.findViewById(R.id.sourceName);
-            sourceImage = (ImageView) itemView.findViewById(R.id.sourceImg);
-            upvote = (CheckBox) itemView.findViewById(R.id.upvote);
-            downvote = (CheckBox) itemView.findViewById(R.id.downVote);
-            upCount = (TextView) itemView.findViewById(R.id.upCount);
-            downCount = (TextView) itemView.findViewById(R.id.downCount);
+            share = (ImageView) itemView.findViewById(R.id.ivShare);
         }
     }
 
@@ -211,14 +168,6 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
         return position;
     }
 
-    public String getSplitDate(String dateString){
-
-        String[] parts = dateString.split("T");
-        String part1 = parts[0]; // 004
-        String part2 = parts[1]; // 03455
-
-        return part1;
-    }
 
 }
 

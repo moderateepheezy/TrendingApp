@@ -7,6 +7,7 @@ import org.trends.trendingapp.models.NewsTrend;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmMigration;
+import io.realm.internal.ColumnType;
 import io.realm.internal.Table;
 
 /**
@@ -34,9 +35,15 @@ public class DBHelper {
 
             if (version == 0) {
                 Table newsTable = realm.getTable(NewsTrend.class);
-             //   newsTable.addColumn("");
+                long arch_status = newsTable.addColumn(ColumnType.INTEGER, "arch_status");
+                version++;
             }
-            return 0;
+
+            if(version == 1){
+                Table newsTable = realm.getTable(NewsTrend.class);
+                long arch_status = newsTable.addColumn(ColumnType.STRING, "arch_status");
+            }
+            return version;
         }
     }
 }

@@ -69,20 +69,20 @@ public class NewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, NewsAda
 
         Spanned decodedTitle = Html.fromHtml(eventName);
 
-        if(postsData.getType().equals("bella")){
+        if(postsData.getType().equals("Bella Naija")){
             holder.sourceImage.setImageResource(R.drawable.bella);
-        }else if(postsData.getType().equals("punch")){
+        }else if(postsData.getType().equals("Punch")){
             holder.sourceImage.setImageResource(R.drawable.punch);
-        }else if(postsData.getType().equals("linda")){
+        }else if(postsData.getType().equals("Linda Ikeji")){
             holder.sourceImage.setImageResource(R.drawable.lib);
-        }else if(postsData.getType().equals("pulse")){
+        }else if(postsData.getType().equals("Pulse")){
             holder.sourceImage.setImageResource(R.drawable.pulse_logo);
         }
 
         holder.eventName.setText(decodedTitle);
         holder.startEvent.setText(getSplitDate(eventDate));
-        String dx = postsData.getContent().trim();
-        holder.eventDescription.setText(dx);
+       // String dx = postsData.getContent().trim();
+        holder.eventDescription.setText(postsData.getContent());
         holder.sourceName.setText(postsData.getType());
 
             Glide.with(context)
@@ -226,7 +226,7 @@ public class NewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, NewsAda
         public ImageButton share;
         public CheckBox upvote;
         public CheckBox downvote;
-        public ImageButton bookmark;
+        public CheckBox bookmark;
 
         public ImageView sourceImage;
         public ImageView mDisplayGeneratedImage;
@@ -245,7 +245,7 @@ public class NewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, NewsAda
             downvote = (CheckBox) itemView.findViewById(R.id.downVote);
             upCount = (TextView) itemView.findViewById(R.id.upCount);
             downCount = (TextView) itemView.findViewById(R.id.downCount);
-            bookmark = (ImageButton) itemView.findViewById(R.id.bookmark);
+            bookmark = (CheckBox) itemView.findViewById(R.id.bookmark);
         }
     }
 
@@ -260,7 +260,7 @@ public class NewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, NewsAda
 
     public String getSplitDate(String dateString){
 
-        return dateString.substring(0,9);
+        return dateString;
     }
 
 }

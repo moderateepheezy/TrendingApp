@@ -1,70 +1,44 @@
-package org.trends.trendingapp.fragments;
+package org.trends.trendingapp.activities;
 
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.TransitionInflater;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.gordonwong.materialsheetfab.MaterialSheetFab;
-import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
 import com.squareup.otto.Subscribe;
-;
+
 import org.trends.trendingapp.R;
 import org.trends.trendingapp.TrendingApplication;
-import org.trends.trendingapp.adapters.NewsAdapter;
 import org.trends.trendingapp.adapters.TestNewsAdapter;
-import org.trends.trendingapp.customviews.Fab;
+import org.trends.trendingapp.adapters.TestNewsReadAdapter;
 import org.trends.trendingapp.models.NewsTrend;
+import org.trends.trendingapp.models.NewsTrendRead;
 import org.trends.trendingapp.models.User;
-import org.trends.trendingapp.services.EventsAPIHelper;
 import org.trends.trendingapp.services.NewsAPIHelper;
+import org.trends.trendingapp.services.NewsReadAPIHelper;
 import org.trends.trendingapp.utils.EventBusSingleton;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
-/**
- * Created by SimpuMind on 5/20/16.
- */
-public class NewsFragment extends Fragment implements  TestNewsAdapter.EventListener{
+public class ReadActivity extends AppCompatActivity implements  TestNewsReadAdapter.EventListener{
 
+    private static final String TAG = ReadActivity.class.getCanonicalName();
     private RecyclerView recyclerView;
     protected Realm realm;
 
     public SwipeRefreshLayout refresh;
 
-    public TestNewsAdapter adapter;
+    public TestNewsReadAdapter adapter;
 
     private LinearLayoutManager linearLayoutManager;
-
-    String fbid;
-
-
-
-    @Bind(R.id.landingPage)
-    public ViewGroup viewGroup;
 
     RealmChangeListener realmChangeListener = new RealmChangeListener() {
         @Override
@@ -73,40 +47,31 @@ public class NewsFragment extends Fragment implements  TestNewsAdapter.EventList
         }
     };
 
+    String fbid;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.new_list_fragment);
+
         realm = Realm.getDefaultInstance();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getActivity().getWindow().setSharedElementExitTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.postsinfotransition));
-        }
-        ButterKnife.bind(getActivity());
+
 
         User user = TrendingApplication.getInstance().getPrefManager().getUser();
 
         fbid = user.getId();
 
-        String x = loadChangestate("bella") +loadChangestate("punch") + loadChangestate("linda") + loadChangestate("pulse");
-        Log.d("FREDD", x);
 
-        NewsAPIHelper.getPosts(fbid,x, getActivity());
+        NewsReadAPIHelper.getPosts(fbid,this);
 
         /* Used when the data set is changed and this notifies the database to update the information */
         realm.addChangeListener(realmChangeListener);
 
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.new_list_fragment, container, false);
-
-        refresh = (SwipeRefreshLayout) v.findViewById(R.id.refresh);
+        refresh = (SwipeRefreshLayout) findViewById(R.id.refresh);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                String x = loadChangestate("bella") +loadChangestate("punch") + loadChangestate("linda") + loadChangestate("pulse");
-                NewsAPIHelper.getPosts(fbid,x, getActivity());
+                NewsReadAPIHelper.getPosts(fbid, ReadActivity.this);
 
                 (new Handler()).postDelayed(new Runnable() {
                     @Override
@@ -118,10 +83,10 @@ public class NewsFragment extends Fragment implements  TestNewsAdapter.EventList
 
             }
         });
-        initView(v);
-        return v;
-    }
 
+        initView();
+
+    }
 
     @Override
     public void onPause() {
@@ -153,16 +118,13 @@ public class NewsFragment extends Fragment implements  TestNewsAdapter.EventList
         super.onConfigurationChanged(newConfig);
     }
 
-    /*Initially load the view with information available in the database till the new data is fetched.
-    * The reason being, a user doesn't have to wait for the data to be previewed in the Screen if there's a slow connection
-    * or some server error. At this point, a user will mostly have some data presented.
-    */
-    private void initView(View v) {
-        RealmResults<NewsTrend> realmResults = getPostsFromDb();
-        recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
-        linearLayoutManager = new LinearLayoutManager(getActivity());
+
+    private void initView() {
+        RealmResults<NewsTrendRead> realmResults = getPostsFromDb();
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        linearLayoutManager = new LinearLayoutManager(ReadActivity.this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new TestNewsAdapter(getActivity(), realmResults, true);
+        adapter = new TestNewsReadAdapter(ReadActivity.this, realmResults, true);
         adapter.setEventListener(this);
         recyclerView.setAdapter(adapter);
     }
@@ -172,8 +134,8 @@ public class NewsFragment extends Fragment implements  TestNewsAdapter.EventList
         setRefreshing(false);
     }
 
-    public RealmResults<NewsTrend> getPostsFromDb() {
-        RealmResults<NewsTrend> realmResults = realm.where(NewsTrend.class).findAll();
+    public RealmResults<NewsTrendRead> getPostsFromDb() {
+        RealmResults<NewsTrendRead> realmResults = realm.where(NewsTrendRead.class).findAll();
         return realmResults;
     }
 
@@ -189,7 +151,7 @@ public class NewsFragment extends Fragment implements  TestNewsAdapter.EventList
     * to the next screen and that ID wil be used to fetch remaining items
     */
     @Override
-    public void onItemClick(View view, NewsTrend postsData) {
+    public void onItemClick(View view, NewsTrendRead postsData) {
 
     }
 
@@ -216,24 +178,14 @@ public class NewsFragment extends Fragment implements  TestNewsAdapter.EventList
                 }).show();
     }
 
-    private String loadChangestate(String prefName){
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(prefName,
-                getActivity().MODE_PRIVATE);
-        boolean  state = sharedPreferences.getBoolean(prefName, true);
-        Log.d("Tryrin", "value" + state);
-        if(!state){
-            return "";
-        }
-
-        return prefName + " ";
-    }
-
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        // createCustomAnimation();
+    public boolean onSupportNavigateUp() {
+        //This method is called when the up button is pressed. Just the pop back stack.
+        Log.d(TAG,"--onSupportNavigateUp()--");
+        getSupportFragmentManager().popBackStack();
+        super.onBackPressed();
+        return true;
     }
-
 
 
 }

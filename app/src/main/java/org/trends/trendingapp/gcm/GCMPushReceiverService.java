@@ -34,10 +34,11 @@ public class GCMPushReceiverService extends GcmListenerService{
     @Override
     public void onMessageReceived(String from, Bundle data) {
         String message  = data.getString("message");
-        sendNotification(message);
+        String title = data.getString("title");
+        sendNotification(message, title);
     }
 
-    private void sendNotification(String message){
+    private void sendNotification(String message, String title){
         Intent intent  = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
@@ -53,7 +54,7 @@ public class GCMPushReceiverService extends GcmListenerService{
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
-        if(AppConstants.appendNotificationMessages){
+        /*if(AppConstants.appendNotificationMessages){
             // store the notification in shared pref first
             TrendingApplication.getInstance().getPrefManager().addNotification(message);
 
@@ -67,18 +68,16 @@ public class GCMPushReceiverService extends GcmListenerService{
             }
         }else{
             inboxStyle.addLine(message);
-        }
+        }*/
 
         final Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
                 + "://" + TrendingApplication.getAppContext().getPackageName() + "/raw/notification");
 
         NotificationCompat.Builder noBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setTicker("Trending App").setWhen(0)
-                .setContentText("Trending App")
+                .setContentTitle(title)
                 .setSound(sound)
                 .setContentText(message)
-                .setStyle(inboxStyle)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
 

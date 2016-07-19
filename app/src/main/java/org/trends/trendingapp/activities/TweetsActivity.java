@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ListView;
 
 import com.squareup.otto.Bus;
@@ -105,6 +106,15 @@ public class TweetsActivity extends AppCompatActivity {
 
     public void setBus(Bus bus) {
         mBus = bus;
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        //This method is called when the up button is pressed. Just the pop back stack.
+        Log.d(TAG,"--onSupportNavigateUp()--");
+        getSupportFragmentManager().popBackStack();
+        super.onBackPressed();
+        return true;
     }
 
 }

@@ -5,7 +5,7 @@ import io.realm.RealmObject;
 /**
  * Created by SimpuMind on 4/26/16.
  */
-public class NewsTrend extends RealmObject {
+public class NewsTrendRead extends RealmObject {
 
     private String title;
     private String href;
@@ -26,10 +26,10 @@ public class NewsTrend extends RealmObject {
 
 
     /* Requires an empty constructor */
-    public NewsTrend() {
+    public NewsTrendRead() {
     }
 
-    public NewsTrend(NewsTrend postsData) {
+    public NewsTrendRead(NewsTrendRead postsData) {
         this.title = postsData.getTitle();
         this.href = postsData.getHref();
         this.timestamp = postsData.getTimestamp();

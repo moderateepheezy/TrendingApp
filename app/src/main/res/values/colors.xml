@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#0a7b9b</color>
-    <color name="colorPrimaryDark">#015871</color>
-    <color name="colorAccent">#f2732f</color>
-    <color name="pressedFab">#ef661d</color>
-    <color name="rippleFab">#f25e0e</color>
+    <color name="colorPrimary">#3b5998</color>
+    <color name="colorPrimaryDark">#2c53a6</color>
+    <color name="colorAccent">#f2392f</color>
+    <color name="pressedFab">#cf3b2a</color>
+    <color name="rippleFab">#df3a2f</color>
     <color name="white">#fff</color>
     <color name="translucent_grey">#455a64</color>
     <color name="bluePrimaryDark">#173641</color>

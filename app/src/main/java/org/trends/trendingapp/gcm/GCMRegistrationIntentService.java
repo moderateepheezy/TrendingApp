@@ -85,6 +85,8 @@ public class GCMRegistrationIntentService extends IntentService{
         //Creating object for our interface
         RetrofitInterface api = adapter.create(RetrofitInterface.class);
 
+        Log.d("API_CALL", api.toString());
+
         api.setUserGCMToken(token, app_name, new Callback<Response>() {
             @Override
             public void success(Response result, Response response) {

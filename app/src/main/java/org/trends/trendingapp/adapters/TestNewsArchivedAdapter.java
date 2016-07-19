@@ -21,7 +21,7 @@ import com.thefinestartist.finestwebview.FinestWebView;
 
 import org.trends.trendingapp.R;
 import org.trends.trendingapp.TrendingApplication;
-import org.trends.trendingapp.models.NewsTrend;
+import org.trends.trendingapp.models.NewsTrendArchived;
 import org.trends.trendingapp.models.ReadStatus;
 import org.trends.trendingapp.models.User;
 import org.trends.trendingapp.services.RetrofitInterface;
@@ -33,9 +33,9 @@ import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.client.Response;
 
-public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, TestNewsAdapter.PostsViewHolder> {
+public class TestNewsArchivedAdapter extends RealmBaseRecyclerViewAdapter<NewsTrendArchived, TestNewsArchivedAdapter.PostsViewHolder> {
 
-    public RealmResults<NewsTrend> realmResults;
+    public RealmResults<NewsTrendArchived> realmResults;
     public Context context;
     public EventListener eventListener;
 
@@ -46,7 +46,7 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
     public boolean isLike = true;
     public boolean isAchive = true;
 
-    public TestNewsAdapter(Context context, RealmResults<NewsTrend> realmResults, boolean automaticUpdate) {
+    public TestNewsArchivedAdapter(Context context, RealmResults<NewsTrendArchived> realmResults, boolean automaticUpdate) {
         super(context, realmResults, automaticUpdate);
         this.realmResults = realmResults;
         this.context = context;
@@ -69,7 +69,7 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
     @Override
     public void onBindViewHolder(final PostsViewHolder holder, int position) {
 
-        final NewsTrend postsData = getItem(position);
+        final NewsTrendArchived postsData = getItem(position);
 
         if (position % 2 == 1) {
             holder.llLeft.setGravity(Gravity.RIGHT);
@@ -170,10 +170,10 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
 
                 String shareBody =  postsData.getHref();
 
-                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                Intent sharingIntent = new Intent(Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
-                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Trending App");
-                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Trending App");
+                sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
                 context.startActivity(Intent.createChooser(sharingIntent, "Paylaş"));
             }
         });
@@ -324,11 +324,11 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
     }
 
     @Override
-    public NewsTrend getItem(int i) {
+    public NewsTrendArchived getItem(int i) {
         return realmResults.get(i);
     }
 
-    public void swapData(RealmResults<NewsTrend> realmResults) {
+    public void swapData(RealmResults<NewsTrendArchived> realmResults) {
         this.realmResults = realmResults;
         notifyDataSetChanged();
     }
@@ -397,7 +397,7 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
     }
 
     public interface EventListener {
-        void onItemClick(final View view, NewsTrend postsData);
+        void onItemClick(final View view, NewsTrendArchived postsData);
     }
 
     @Override
@@ -415,6 +415,11 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
         String text = descp + "<font color='#f2732f'>  <strong>more...</strong></font>";
 
         return text.substring(0, 50);
+    }
+
+    public void setFilter(RealmResults<NewsTrendArchived> models) {
+        models.addAll(models);
+        notifyDataSetChanged();
     }
 
 }

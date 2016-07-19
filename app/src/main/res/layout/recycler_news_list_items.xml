@@ -91,8 +91,8 @@
                             android:ellipsize="end"
                             android:text="event name"
                             android:maxLines="2"
-                            app:foundFont="@integer/font_roboto_bold"
-                            android:textColor="#0a7b9b"
+                            app:foundFont="@integer/font_roboto_light"
+                            android:textColor="@color/colorPrimary"
                             />
 
                         <org.trends.trendingapp.customviews.RobotoTextView
@@ -173,14 +173,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
+                        android:gravity="center_vertical"
                         android:layout_alignParentEnd="true">
 
-                        <ImageButton
+                        <CheckBox
                             android:id="@+id/bookmark"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:backgroundTint="@color/white"
-                            android:src="@drawable/heart_small"/>
+                            android:layout_margin="5dp"
+                            android:button="@drawable/checkbox_selector_bookmark" />
 
                         <ImageButton
                             android:id="@+id/share"

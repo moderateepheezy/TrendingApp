@@ -1,9 +1,11 @@
 package org.trends.trendingapp.activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
@@ -11,6 +13,7 @@ import org.trends.trendingapp.R;
 
 public class SettingsActivity extends AppCompatActivity {
 
+    private static final String TAG = SettingsActivity.class.getSimpleName();
     SwitchCompat linda;
     SwitchCompat bella;
     SwitchCompat punch;
@@ -75,4 +78,14 @@ public class SettingsActivity extends AppCompatActivity {
         boolean  state = sharedPreferences.getBoolean(prefName, true);
         switchService.setChecked(state);
     }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        //This method is called when the up button is pressed. Just the pop back stack.
+        Log.d(TAG,"--onSupportNavigateUp()--");
+        getSupportFragmentManager().popBackStack();
+        super.onBackPressed();
+        return true;
+    }
+
 }

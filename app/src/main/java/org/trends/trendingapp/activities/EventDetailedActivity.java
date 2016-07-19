@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,6 +19,8 @@ import org.trends.trendingapp.customviews.RobotoTextView;
 import org.trends.trendingapp.utils.AppConstants;
 
 public class EventDetailedActivity extends AppCompatActivity {
+
+    private static final String TAG = EventDetailedActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,5 +99,14 @@ public class EventDetailedActivity extends AppCompatActivity {
                 .placeholder(R.drawable.tw_logo)
                 .fitCenter()
                 .into(back_img);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        //This method is called when the up button is pressed. Just the pop back stack.
+        Log.d(TAG,"--onSupportNavigateUp()--");
+        getSupportFragmentManager().popBackStack();
+        super.onBackPressed();
+        return true;
     }
 }

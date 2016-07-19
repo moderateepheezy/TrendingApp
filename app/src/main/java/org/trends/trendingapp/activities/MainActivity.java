@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.LocalBroadcastManager;
@@ -27,15 +26,11 @@ import com.bumptech.glide.Glide;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.gordonwong.materialsheetfab.MaterialSheetFab;
-import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
 
 import org.trends.trendingapp.R;
 import org.trends.trendingapp.TrendingApplication;
 import org.trends.trendingapp.adapters.MyPagerAdapter;
-import org.trends.trendingapp.customviews.Fab;
 import org.trends.trendingapp.customviews.RobotoTextView;
-import org.trends.trendingapp.gcm.GCMPushReceiverService;
 import org.trends.trendingapp.models.User;
 import org.trends.trendingapp.gcm.GCMRegistrationIntentService;
 
@@ -56,9 +51,6 @@ public class MainActivity extends AppCompatActivity
     static String id;
     public String access_tokens;
 
-
-    private MaterialSheetFab materialSheetFab;
-    private int statusBarColor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,9 +74,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         initViewPager();
-        setupFab();
         initTabLayout();
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -117,6 +107,8 @@ public class MainActivity extends AppCompatActivity
                 //Check type of intent filter
                 if(intent.getAction().endsWith(GCMRegistrationIntentService.REGISTRATION_SUCCES)){
                     String token  = intent.getStringExtra("token");
+                    Log.d("TokenValue", token);
+                    //Toast.makeText(MainActivity.this, token, Toast.LENGTH_SHORT).show();
                 }else if(intent.getAction().equals(GCMRegistrationIntentService.REGISTRATION_ERROR)){
                     //Registration error
                 }else{
@@ -168,17 +160,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if (materialSheetFab.isSheetVisible()) {
-            materialSheetFab.hideSheet();
-        } else {
-            super.onBackPressed();
-        }
-        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
-        }*/
+        }
     }
 
     private void toggleDrawer() {
@@ -194,10 +181,10 @@ public class MainActivity extends AppCompatActivity
         vp.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), mTitles));
     }
 
+
     private void initTabLayout() {
 
         vp.setOffscreenPageLimit(MyPagerAdapter.NUM_ITEMS);
-        updatePage(vp.getCurrentItem());
 
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(vp);
@@ -209,7 +196,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onPageSelected(int position) {
-                updatePage(position);
+
             }
 
             @Override
@@ -219,88 +206,12 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void setupFab() {
-
-        Fab fab = (Fab) findViewById(R.id.fab);
-        View sheetView = findViewById(R.id.fab_sheet);
-        View overlay = findViewById(R.id.overlay);
-        int sheetColor = getResources().getColor(R.color.background_card);
-        int fabColor = getResources().getColor(R.color.colorAccent);
-
-        // Create material sheet FAB
-        materialSheetFab = new MaterialSheetFab<>(fab, sheetView, overlay, sheetColor, fabColor);
-
-        // Set material sheet event listener
-        materialSheetFab.setEventListener(new MaterialSheetFabEventListener() {
-            @Override
-            public void onShowSheet() {
-                // Save current status bar color
-                statusBarColor = getStatusBarColor();
-                // Set darker status bar color to match the dim overlay
-                setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
-            }
-
-            @Override
-            public void onHideSheet() {
-                // Restore status bar color
-                setStatusBarColor(statusBarColor);
-            }
-        });
-
-        // Set material sheet item click listeners
-        findViewById(R.id.fab_sheet_item_recording).setOnClickListener(this);
-        findViewById(R.id.fab_sheet_item_reminder).setOnClickListener(this);
-        findViewById(R.id.fab_sheet_item_photo).setOnClickListener(this);
-        findViewById(R.id.fab_sheet_item_note).setOnClickListener(this);
-    }
-
-    private int getStatusBarColor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return getWindow().getStatusBarColor();
-        }
-        return 0;
-    }
-
-    private void setStatusBarColor(int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(color);
-        }
-    }
 
     @Override
     public void onClick(View v) {
         Toast.makeText(this, "Fab Pressed", Toast.LENGTH_SHORT).show();
-        materialSheetFab.hideSheet();
     }
 
-    /**
-     * Called when the selected page changes.
-     *
-     * @param selectedPage selected page
-     */
-    private void updatePage(int selectedPage) {
-        updateFab(selectedPage);
-    }
-
-    /**
-     * Updates the FAB based on the selected page
-     *
-     * @param selectedPage selected page
-     */
-    private void updateFab(int selectedPage) {
-        switch (selectedPage) {
-            case MyPagerAdapter.NEWS_POST:
-                materialSheetFab.showFab();
-                break;
-            case MyPagerAdapter.EVENT_POST:
-                materialSheetFab.hideSheetThenFab();
-                break;
-            case MyPagerAdapter.TREND_POST:
-            default:
-                materialSheetFab.hideSheetThenFab();
-                break;
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -336,8 +247,14 @@ public class MainActivity extends AppCompatActivity
             // Handle the camera action
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             startActivity(intent);
-        } else if (id == R.id.nav_share) {
-
+        }
+        else if(id == R.id.nav_read){
+            Intent intent = new Intent(getApplicationContext(), ReadActivity.class);
+            startActivity(intent);
+        }
+        else if (id == R.id.favourite) {
+            Intent intent = new Intent(getApplicationContext(), AchiveActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -352,6 +269,7 @@ public class MainActivity extends AppCompatActivity
             //some code
         }
     }
+
 
 
     public static void clearNotifications() {

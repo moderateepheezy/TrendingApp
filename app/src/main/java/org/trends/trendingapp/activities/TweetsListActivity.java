@@ -6,6 +6,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AbsListView;
@@ -29,6 +30,7 @@ import io.fabric.sdk.android.Fabric;
 public class TweetsListActivity extends AppCompatActivity {
 
     public static final String ARG_SEARCH_REQUEST = "tweet";
+    private static final String TAG = TweetsListActivity.class.getSimpleName();
     private String request;
 
     @Override
@@ -118,5 +120,14 @@ public class TweetsListActivity extends AppCompatActivity {
         Intent mIntent = new Intent();
         setResult(RESULT_OK, mIntent);
         super.onBackPressed();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        //This method is called when the up button is pressed. Just the pop back stack.
+        Log.d(TAG,"--onSupportNavigateUp()--");
+        getSupportFragmentManager().popBackStack();
+        super.onBackPressed();
+        return true;
     }
 }

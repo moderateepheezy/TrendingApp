@@ -79,7 +79,7 @@ public class SignupActivity extends AppCompatActivity {
                             TrendingApplication.getInstance().getPrefManager().storeUser(user);
 
                             Intent i = new Intent(SignupActivity.this, MainActivity.class);
-                            //progress.dismiss();
+                            Log.d("FaceBookID", facebook_id);
                             startActivity(i);
                             finish();
                         } catch (JSONException e) {

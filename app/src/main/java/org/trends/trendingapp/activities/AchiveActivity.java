@@ -1,70 +1,46 @@
-package org.trends.trendingapp.fragments;
+package org.trends.trendingapp.activities;
 
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.TransitionInflater;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
-import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.gordonwong.materialsheetfab.MaterialSheetFab;
-import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
 import com.squareup.otto.Subscribe;
-;
+
 import org.trends.trendingapp.R;
 import org.trends.trendingapp.TrendingApplication;
-import org.trends.trendingapp.adapters.NewsAdapter;
-import org.trends.trendingapp.adapters.TestNewsAdapter;
-import org.trends.trendingapp.customviews.Fab;
-import org.trends.trendingapp.models.NewsTrend;
+import org.trends.trendingapp.adapters.TestNewsArchivedAdapter;
+import org.trends.trendingapp.models.NewsTrendArchived;
 import org.trends.trendingapp.models.User;
-import org.trends.trendingapp.services.EventsAPIHelper;
-import org.trends.trendingapp.services.NewsAPIHelper;
+import org.trends.trendingapp.services.NewsArchivedAPIHelper;
 import org.trends.trendingapp.utils.EventBusSingleton;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
-/**
- * Created by SimpuMind on 5/20/16.
- */
-public class NewsFragment extends Fragment implements  TestNewsAdapter.EventListener{
+public class AchiveActivity extends AppCompatActivity implements
+        TestNewsArchivedAdapter.EventListener, SearchView.OnQueryTextListener{
 
+    private static final String TAG = AchiveActivity.class.getSimpleName();
     private RecyclerView recyclerView;
     protected Realm realm;
 
     public SwipeRefreshLayout refresh;
 
-    public TestNewsAdapter adapter;
+    public TestNewsArchivedAdapter adapter;
 
     private LinearLayoutManager linearLayoutManager;
-
-    String fbid;
-
-
-
-    @Bind(R.id.landingPage)
-    public ViewGroup viewGroup;
 
     RealmChangeListener realmChangeListener = new RealmChangeListener() {
         @Override
@@ -73,40 +49,31 @@ public class NewsFragment extends Fragment implements  TestNewsAdapter.EventList
         }
     };
 
+    String fbid;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.new_list_fragment);
+
         realm = Realm.getDefaultInstance();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getActivity().getWindow().setSharedElementExitTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.postsinfotransition));
-        }
-        ButterKnife.bind(getActivity());
+
 
         User user = TrendingApplication.getInstance().getPrefManager().getUser();
 
         fbid = user.getId();
 
-        String x = loadChangestate("bella") +loadChangestate("punch") + loadChangestate("linda") + loadChangestate("pulse");
-        Log.d("FREDD", x);
 
-        NewsAPIHelper.getPosts(fbid,x, getActivity());
+        NewsArchivedAPIHelper.getPosts(fbid,this);
 
         /* Used when the data set is changed and this notifies the database to update the information */
         realm.addChangeListener(realmChangeListener);
 
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.new_list_fragment, container, false);
-
-        refresh = (SwipeRefreshLayout) v.findViewById(R.id.refresh);
+        refresh = (SwipeRefreshLayout) findViewById(R.id.refresh);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                String x = loadChangestate("bella") +loadChangestate("punch") + loadChangestate("linda") + loadChangestate("pulse");
-                NewsAPIHelper.getPosts(fbid,x, getActivity());
+                NewsArchivedAPIHelper.getPosts(fbid, AchiveActivity.this);
 
                 (new Handler()).postDelayed(new Runnable() {
                     @Override
@@ -118,10 +85,10 @@ public class NewsFragment extends Fragment implements  TestNewsAdapter.EventList
 
             }
         });
-        initView(v);
-        return v;
-    }
 
+        initView();
+
+    }
 
     @Override
     public void onPause() {
@@ -153,33 +120,30 @@ public class NewsFragment extends Fragment implements  TestNewsAdapter.EventList
         super.onConfigurationChanged(newConfig);
     }
 
-    /*Initially load the view with information available in the database till the new data is fetched.
-    * The reason being, a user doesn't have to wait for the data to be previewed in the Screen if there's a slow connection
-    * or some server error. At this point, a user will mostly have some data presented.
-    */
-    private void initView(View v) {
-        RealmResults<NewsTrend> realmResults = getPostsFromDb();
-        recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
-        linearLayoutManager = new LinearLayoutManager(getActivity());
+
+    private void initView() {
+        RealmResults<NewsTrendArchived> realmResults = getPostsFromDb();
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        linearLayoutManager = new LinearLayoutManager(AchiveActivity.this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new TestNewsAdapter(getActivity(), realmResults, true);
+        adapter = new TestNewsArchivedAdapter(AchiveActivity.this, realmResults, true);
         adapter.setEventListener(this);
         recyclerView.setAdapter(adapter);
     }
 
     @Subscribe
-    public void onPostSuccess(NewsAPIHelper.PostsInfoSuccess postInfo) {
+    public void onPostSuccess(NewsArchivedAPIHelper.PostsInfoSuccess postInfo) {
         setRefreshing(false);
     }
 
-    public RealmResults<NewsTrend> getPostsFromDb() {
-        RealmResults<NewsTrend> realmResults = realm.where(NewsTrend.class).findAll();
+    public RealmResults<NewsTrendArchived> getPostsFromDb() {
+        RealmResults<NewsTrendArchived> realmResults = realm.where(NewsTrendArchived.class).findAll();
         return realmResults;
     }
 
     /* Present user with some error message when there's an issue while retrieving data */
     @Subscribe
-    public void onPostFailure(NewsAPIHelper.PostsInfoFailure error) {
+    public void onPostFailure(NewsArchivedAPIHelper.PostsInfoFailure error) {
         setRefreshing(false);
         displaySimpleConfirmSnackBar(recyclerView, error.getErrorMessage());
     }
@@ -189,7 +153,7 @@ public class NewsFragment extends Fragment implements  TestNewsAdapter.EventList
     * to the next screen and that ID wil be used to fetch remaining items
     */
     @Override
-    public void onItemClick(View view, NewsTrend postsData) {
+    public void onItemClick(View view, NewsTrendArchived postsData) {
 
     }
 
@@ -216,24 +180,53 @@ public class NewsFragment extends Fragment implements  TestNewsAdapter.EventList
                 }).show();
     }
 
-    private String loadChangestate(String prefName){
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(prefName,
-                getActivity().MODE_PRIVATE);
-        boolean  state = sharedPreferences.getBoolean(prefName, true);
-        Log.d("Tryrin", "value" + state);
-        if(!state){
-            return "";
-        }
+    @Override
+    public boolean onSupportNavigateUp() {
+        //This method is called when the up button is pressed. Just the pop back stack.
+        Log.d(TAG,"--onSupportNavigateUp()--");
+        getSupportFragmentManager().popBackStack();
+        super.onBackPressed();
+        return true;
+    }
 
-        return prefName + " ";
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.news_search, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(this);
+
+        return true;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        // createCustomAnimation();
+    public boolean onQueryTextSubmit(String query) {
+        final RealmResults<NewsTrendArchived> newsTrendArchiveds = filter(getPostsFromDb(),query);
+        adapter.setFilter(newsTrendArchiveds);
+        return false;
     }
 
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        // User changed the text
+        return false;
+    }
+
+
+    private RealmResults<NewsTrendArchived> filter(RealmResults<NewsTrendArchived> models, String query){
+        query = query.toLowerCase();
+
+        RealmResults<NewsTrendArchived> filterTrendArchiveds = getPostsFromDb();
+        for(NewsTrendArchived model : models){
+            final String text = model.getTitle().toLowerCase();
+            if(text.contains(query)){
+                filterTrendArchiveds.add(model);
+            }
+        }
+        return filterTrendArchiveds;
+    }
 
 
 }

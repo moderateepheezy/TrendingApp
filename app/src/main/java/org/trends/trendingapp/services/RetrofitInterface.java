@@ -1,7 +1,9 @@
 package org.trends.trendingapp.services;
 
 
-import org.json.JSONObject;
+import org.trends.trendingapp.models.NewsTrendArchivedList;
+import org.trends.trendingapp.models.NewsTrendReadList;
+import org.trends.trendingapp.models.ReadStatus;
 import org.trends.trendingapp.models.TrendList;
 import org.trends.trendingapp.models.EventListItem;
 import org.trends.trendingapp.models.NewsTrendList;
@@ -31,12 +33,35 @@ public interface RetrofitInterface {
     @GET("/demo/yql/users/{user_id}/news/preferences")
     void getNewsPosts(@Path("user_id")String user_id, @Query("value")String preference, Callback<NewsTrendList> cb);
 
+    @GET("/demo/yql/news/like/{user_id}/{news_id}")
+    void like(@Path("news_id") Integer newsItemId, @Path("user_id") String userId, Callback<ReadStatus> status);
+
+    @GET("/demo/yql/news/dislike/{user_id}/{news_id}")
+    void unlike(@Path("news_id") Integer newsItemId, @Path("user_id") String userId, Callback<ReadStatus> status);
+
+    @GET("/demo/yql/news/read/{user_id}/{news_id}/{ext_date}")
+    void sendReadInfo(@Path("news_id") Integer newsItemId,
+                      @Path("user_id") String userId, @Path("ext_date") String ext_date, Callback<ReadStatus> status);
+
+    @GET("/demo/yql/news/archive/{user_id}/{news_id}/{ext_date}")
+    void sendArchiveInfo(@Path("news_id") Integer newsItemId,
+                         @Path("user_id") String userId, @Path("ext_date") String ext_date, Callback<ReadStatus> status);
+
+    @GET("/demo/yql/news/unarchive/{user_id}/{news_id}")
+    void sendUnArchiveInfo(@Path("news_id") Integer newsItemId,
+                           @Path("user_id") String userId, Callback<ReadStatus> status);
+
+    @GET("/demo/yql/news/read/{user_id}")
+    void getNewsRead(@Path("user_id") String userId, Callback<NewsTrendReadList> cb);
+
+    @GET("/demo/yql/news/{user_id}")
+    void getArchived(@Path("user_id") String userId, Callback<NewsTrendArchivedList> cb);
 
     @FormUrlEncoded
-    @POST("/api/v1/users/")
+    @POST("/api/v1/users/new")
     void setUserGCMToken(
             @Field("registration_id")String token,
-                @Field("application_name")String app_name,
+                @Field("client_application")String app_name,
             Callback<Response> callback);
 
     @GET(AppConstants.TWITTER_HASHTAG_SEARCH_CODE )

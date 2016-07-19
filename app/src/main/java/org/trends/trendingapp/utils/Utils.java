@@ -5,43 +5,44 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.biotekno.vorporate.models.Event;
-import com.biotekno.vorporate.models.NewsItem;
+import org.trends.trendingapp.models.NewsTrend;
 
 import java.util.ArrayList;
 
+import io.realm.RealmResults;
+
 /**
- * Created by serdarbuyukkanli on 17/02/16.
+ * Created by simpumind on 16/07/16.
  */
 public class Utils {
 
-    public static boolean isNewsLikedOrFaved(Context context, NewsItem newsItem, boolean isLiked) {
+    //public RealmResults<NewsTrend> realmResults;
 
-        ArrayList<NewsItem> newsItems = getLikedOrFavedNews(context, isLiked);
+
+
+    private static final Gson gson = new Gson();
+    public static boolean isNewsLikedOrFaved(Context context, NewsTrend newsItem, boolean isLiked) {
+
+        ArrayList<NewsTrend> newsItems = getLikedOrFavedNews(context, isLiked);
 
         if (newsItems != null) {
-
-
-            for (NewsItem news : newsItems) {
-
-                if (newsItem.getId() == news.getId()) {
-                    Log.d("logFavourite", "isNewsLikedOrFaved true newsItem.getId: " + newsItem.getId() + ", news.getId: " + news.getId());
+            for (NewsTrend news : newsItems) {
+                if (newsItem.getNews_id()== news.getNews_id()) {
+                    Log.d("logFavourite", "isNewsLikedOrFaved true newsItem.getId: " + newsItem.getNews_id() + ", news.getId: " + news.getNews_id());
 
                     return true;
                 }
             }
         }
-
         Log.d("logFavourite", "isNewsLikedOrFaved false");
-
         return false;
-
     }
 
-    //listenin başına ekle
-    public static void likeOrFavNews(Context context, NewsItem newsItem, boolean isLike) {
+
+    public static void likeOrFavNews(Context context, NewsTrend newsItem, boolean isLike) {
 
         Log.d("logFavourite", "likeNews");
+
 
         SharedPreferences preferences = context.getSharedPreferences("Prefs", Context.MODE_PRIVATE);
 
@@ -53,7 +54,7 @@ public class Utils {
 
 
         if (jsonLikedNews != null) {
-            ArrayList<NewsItem> newsItems = convertToModel(jsonLikedNews);
+            ArrayList<NewsTrend> newsItems = convertToModel(jsonLikedNews);
 //            newsItem.setLikeCount(newsItem.getLikeCount() + 1);
             newsItems.add(newsItem);
 
@@ -69,11 +70,12 @@ public class Utils {
             editor.commit();
         } else {
 
-            ArrayList<NewsItem> newsItems = new ArrayList<>();
+            ArrayList<NewsTrend> newsItems = new ArrayList<>();
             newsItems.add(newsItem);
 
             Log.d("logFavourite", "size: " + newsItems.size());
             String jsonUpdatedLikedNews = convertToJson(newsItems);
+
 
             SharedPreferences.Editor editor = preferences.edit();
             if (isLike)
@@ -88,7 +90,7 @@ public class Utils {
 
     }
 
-    public static void unlikeOrUnfavNews(Context context, NewsItem newsItem, boolean isLike) {
+    public static void unlikeOrUnfavNews(Context context, NewsTrend newsItem, boolean isLike) {
 
         Log.d("logFavourite", "likeNews");
 
@@ -101,11 +103,11 @@ public class Utils {
             jsonLikedNews = preferences.getString("favedNews", null);
 
         if (jsonLikedNews != null) {
-            ArrayList<NewsItem> newsItems = convertToModel(jsonLikedNews);
+            ArrayList<NewsTrend> newsItems = convertToModel(jsonLikedNews);
 
             for (int i = 0; i < newsItems.size(); i++) {
 
-                if (newsItems.get(i).getId() == newsItem.getId())
+                if (newsItems.get(i).getNews_id() == newsItem.getNews_id())
                     newsItems.remove(i);
 
             }
@@ -126,7 +128,7 @@ public class Utils {
 
     }
 
-    public static ArrayList<NewsItem> getLikedOrFavedNews(Context context, boolean isLike) {
+    public static ArrayList<NewsTrend> getLikedOrFavedNews(Context context, boolean isLike) {
 
         SharedPreferences preferences = context.getSharedPreferences("Prefs", Context.MODE_PRIVATE);
         String jsonLikedNews;
@@ -135,7 +137,7 @@ public class Utils {
         else
             jsonLikedNews = preferences.getString("favedNews", null);
 
-        ArrayList<NewsItem> newsItems;
+        ArrayList<NewsTrend> newsItems;
         if (jsonLikedNews != null) {
             newsItems = convertToModel(jsonLikedNews);
         } else {
@@ -146,16 +148,17 @@ public class Utils {
 
     }
 
-    public static String convertToJson(ArrayList<NewsItem> newsItems) {
-        Gson gson = new Gson();
-        String json = gson.toJson(newsItems);
-        return json;
-    }
+                public static String convertToJson(final ArrayList<NewsTrend> newsItems) {
 
-    public static ArrayList<NewsItem> convertToModel(String jsonString) {
-        Gson gson = new Gson();
-        NewsItem[] newsItems = gson.fromJson(jsonString, NewsItem[].class);
-        ArrayList<NewsItem> newsItemList = new ArrayList<>();
+
+                    String  json = gson.toJson(newsItems);
+
+                    return json;
+                }
+
+    public static ArrayList<NewsTrend> convertToModel(String jsonString) {
+        NewsTrend[] newsItems = gson.fromJson(jsonString, NewsTrend[].class);
+        ArrayList<NewsTrend> newsItemList = new ArrayList<>();
 
         for (int i = 0; i < newsItems.length; i++) {
             newsItemList.add(newsItems[i]);
@@ -163,29 +166,44 @@ public class Utils {
         return newsItemList;
     }
 
-    public static String convertToEventJson(Event events) {
-        Gson gson = new Gson();
-        String json = gson.toJson(events);
-        return json;
-    }
 
-    public static Event convertToEventModel(String jsonString) {
-        Gson gson = new Gson();
-        Event events = gson.fromJson(jsonString, Event.class);
-        return events;
-    }
 
-    public static String convertToNewsJson(NewsItem news) {
-        Gson gson = new Gson();
+
+
+    public static String convertToNewsJson(NewsTrend news) {
         String json = gson.toJson(news);
         return json;
     }
 
-    public static NewsItem convertToNewsModel(String jsonString) {
-        Gson gson = new Gson();
-        NewsItem news = gson.fromJson(jsonString, NewsItem.class);
+    public static NewsTrend convertToNewsModel(String jsonString) {
+        NewsTrend news = gson.fromJson(jsonString, NewsTrend.class);
         return news;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

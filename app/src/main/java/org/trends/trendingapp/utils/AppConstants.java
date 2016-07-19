@@ -4,6 +4,11 @@ package org.trends.trendingapp.utils;
  * Created by SimpuMind on 5/21/16.
  */
 public class AppConstants {
+
+    public static final String tab1= "tab1";
+    public static final String tab2 = "tab2";
+    public static final String tab3 = "tab3";
+
     public static final String TITLE_KEY = "title";
     public static final String DATE_KEY = "date";
     public static final String CONTENT_KEY = "content";
