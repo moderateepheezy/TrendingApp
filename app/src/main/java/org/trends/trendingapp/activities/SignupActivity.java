@@ -30,7 +30,7 @@ public class SignupActivity extends AppCompatActivity {
     public static CallbackManager callbackmanager;
 
     private Button fbbutton;
-    private String facebook_id, f_name, email_id;
+    private static String facebook_id, f_name, email_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

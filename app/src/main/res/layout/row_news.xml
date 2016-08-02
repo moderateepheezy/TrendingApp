@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/postContentHolder"
-    android:background="#e1dede"
     android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
@@ -113,13 +112,16 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true">
 
-                <ImageView
+                <com.sackcentury.shinebuttonlib.ShineButton
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_margin="10dp"
+                    android:layout_alignParentLeft="true"
                     android:id="@+id/ivLike"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:padding="10dp"
-                    android:src="@drawable/kalp_bos_kucuk" />
+                    app:btn_color="@android:color/darker_gray"
+                    app:btn_fill_color="@color/colorAccent"
+                    app:enable_flashing="true"
+                    app:siShape="@raw/heart" />
 
                 <TextView
                     android:id="@+id/tvNewsCountLike"

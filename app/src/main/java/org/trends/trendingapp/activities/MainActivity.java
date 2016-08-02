@@ -6,8 +6,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.design.widget.NavigationView;
@@ -16,10 +21,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -34,22 +43,32 @@ import org.trends.trendingapp.customviews.RobotoTextView;
 import org.trends.trendingapp.models.User;
 import org.trends.trendingapp.gcm.GCMRegistrationIntentService;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
-
+    public static String POSITION = "POSITION";
     private BroadcastReceiver mRegistrationBroadCastReceiver;
 
-    private final String[] mTitles = {"News", "Events", "Trends"};
     private TabLayout tabLayout;
     private ViewPager vp;
+    private MyPagerAdapter myPagerAdapter;
 
     String emails;
     String fullnames;
     static String id;
     public String access_tokens;
+
+    private int[] imageResId = {
+            R.drawable.newspaper_black,
+            R.drawable.calendar_black,
+            R.drawable.chart_line_black,
+            R.drawable.youtube_play_black
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +77,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        showHashKey(getApplicationContext());
 
 
         User user = TrendingApplication.getInstance().getPrefManager().getUser();
@@ -178,7 +199,8 @@ public class MainActivity extends AppCompatActivity
     }
     private void initViewPager() {
         vp = (ViewPager) findViewById(R.id.vp);
-        vp.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), mTitles));
+        myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), getApplicationContext());
+        vp.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), getApplicationContext()));
     }
 
 
@@ -188,6 +210,35 @@ public class MainActivity extends AppCompatActivity
 
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(vp);
+
+
+        for (int i = 0; i < tabLayout.getTabCount(); i++) {
+            TabLayout.Tab tab = tabLayout.getTabAt(i);
+            tab.setCustomView(myPagerAdapter.getTabView(i));
+        }
+        tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getCustomView().findViewById(R.id.tab).setVisibility(View.VISIBLE);
+
+        tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getCustomView().setSelected(true);
+
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                vp.setCurrentItem(tab.getPosition());
+                tabLayout.getTabAt(tab.getPosition()).getCustomView().findViewById(R.id.tab).setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+                tabLayout.getTabAt(tab.getPosition()).getCustomView().findViewById(R.id.tab).setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
         vp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -256,6 +307,10 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(getApplicationContext(), AchiveActivity.class);
             startActivity(intent);
         }
+        else if (id == R.id.feedback) {
+            Intent intent = new Intent(getApplicationContext(), FeedBackActivity.class);
+            startActivity(intent);
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -275,5 +330,32 @@ public class MainActivity extends AppCompatActivity
     public static void clearNotifications() {
         NotificationManager notificationManager = (NotificationManager) TrendingApplication.getInstance().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
+    }
+
+    public static void showHashKey(Context context) {
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(
+                    "org.trends.trendingapp", PackageManager.GET_SIGNATURES); //Your            package name here
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.i("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+        } catch (NoSuchAlgorithmException e) {
+        }
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(POSITION, tabLayout.getSelectedTabPosition());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        vp.setCurrentItem(savedInstanceState.getInt(POSITION));
     }
 }

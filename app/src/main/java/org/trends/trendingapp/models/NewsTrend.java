@@ -23,6 +23,7 @@ public class NewsTrend extends RealmObject {
     private int read_status;
     private int news_id;
     private String arch_status;
+    private boolean checked;
 
 
     /* Requires an empty constructor */
@@ -46,8 +47,16 @@ public class NewsTrend extends RealmObject {
         this.news_id = postsData.getNews_id();
         this.read_count = postsData.getRead_count();
         this.arch_status = postsData.getArch_status();
+        this.checked = postsData.isChecked();
     }
 
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
 
     public String getTitle() {
         return title;

@@ -16,11 +16,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.sackcentury.shinebuttonlib.ShineButton;
 import com.squareup.okhttp.OkHttpClient;
 import com.thefinestartist.finestwebview.FinestWebView;
 
 import org.trends.trendingapp.R;
 import org.trends.trendingapp.TrendingApplication;
+import org.trends.trendingapp.activities.MainActivity;
 import org.trends.trendingapp.models.NewsTrend;
 import org.trends.trendingapp.models.ReadStatus;
 import org.trends.trendingapp.models.User;
@@ -59,7 +61,6 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
     @Override
     public PostsViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         user = TrendingApplication.getInstance().getPrefManager().getUser();
-
         fbid = user.getId();
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_news, viewGroup, false);
         PostsViewHolder mediaViewHolder = new PostsViewHolder(v);
@@ -70,6 +71,11 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
     public void onBindViewHolder(final PostsViewHolder holder, int position) {
 
         final NewsTrend postsData = getItem(position);
+
+        final MainActivity mainActivity = (MainActivity) context;
+
+        if (holder.ivLike != null)
+            holder.ivLike.init(mainActivity);
 
         if (position % 2 == 1) {
             holder.llLeft.setGravity(Gravity.RIGHT);
@@ -86,9 +92,9 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
         if(postsData.getLike_status() == 1){
             Log.d("logLike", String.valueOf(postsData.getLike_status()));
             isLike = true;
-            holder.ivLike.setImageResource(R.drawable.kalp_dolu_kucuk);
+            holder.ivLike.setChecked(true);
         } else {
-            holder.ivLike.setImageResource(R.drawable.kalp_bos_kucuk);
+            holder.ivLike.setChecked(false);
             isLike = false;
         }
 
@@ -99,6 +105,7 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
             holder.ivFavorite.setImageResource(R.drawable.yildiz_dolu_kucuk);
         }else{
             holder.ivFavorite.setImageResource(R.drawable.yildiz_bos_kucuk);
+            isAchive = false;
         }
 
         Spanned decodedTitle = Html.fromHtml(eventName);
@@ -114,7 +121,6 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
         }
 
 
-
         holder.tvCountPageView.setText(postsData.getRead_count() + " Views");
         holder.tvNewsCountLike.setText("" + postsData.getLike_count());
 
@@ -122,8 +128,6 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
         holder.tvNewsDate.setText(getSplitDate(eventDate));
         String text = postsData.getContent() + "<font color='red'>  <strong>More...</strong></font>";
         holder.tvNewsShortText.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
-       // holder.sourceName.setText(postsData.getType());
-
 
             Glide.with(context)
                     .load(postsData.getImage())
@@ -183,8 +187,6 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
             @Override
             public void onClick(View v) {
 
-                Log.d("logFavourite", "like OnClickListener");
-
                 if(!isAchive){
                     archive(postsData.getNews_id(), postsData.getExt_date());
                     holder.ivFavorite.setImageResource(R.drawable.yildiz_dolu_kucuk);
@@ -198,23 +200,22 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
             }
         });
 
+
+
+        holder.ivLike.setTag(holder);
         holder.ivLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Log.d("logFavourite", "like OnClickListener");
-                Log.e("logLike", "count: " + holder.tvNewsCountLike.getText().toString());
-
+                PostsViewHolder viewHolder =(PostsViewHolder) v.getTag();
                 if (!isLike) {
                     like(postsData.getNews_id());
-                    holder.tvNewsCountLike.setText("" + (Integer.parseInt(holder.tvNewsCountLike.getText().toString()) + 1));
-                    holder.ivLike.setImageResource(R.drawable.kalp_dolu_kucuk);
+                    viewHolder.tvNewsCountLike.setText("" + (Integer.parseInt(holder.tvNewsCountLike.getText().toString()) + 1));
+                    viewHolder.ivLike.setChecked(true);
                     isLike = true;
                 } else {
-                    Log.d("ArchStatus", String.valueOf(postsData.getArch_status()));
                     unlike(postsData.getNews_id());
-                    holder.tvNewsCountLike.setText("" + (Integer.parseInt(holder.tvNewsCountLike.getText().toString()) - 1));
-                    holder.ivLike.setImageResource(R.drawable.kalp_bos_kucuk);
+                    viewHolder.tvNewsCountLike.setText("" + (Integer.parseInt(holder.tvNewsCountLike.getText().toString()) - 1));
+                    viewHolder.ivLike.setChecked(false);
                     isLike = false;
 
                 }
@@ -228,7 +229,6 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
 
     private void like(final int newsItemId) {
         setupRestClient();
-        Log.e("logfb", "hunk" + fbid);
         restApi.like(newsItemId, fbid, new Callback<ReadStatus>() {
             @Override
             public void success(ReadStatus readStatus, Response response) {
@@ -366,10 +366,11 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
         public ImageView ivShare;
 
         public ImageView ivFavorite;
-        public ImageView ivLike;
+        public ShineButton ivLike;
 
         public TextView tvCountPageView;
         public TextView tvNewsCountLike;
+
 
         PostsViewHolder(View itemView) {
             super(itemView);
@@ -388,7 +389,7 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
             tvNewsDate = (TextView) itemView.findViewById(R.id.tvNewsDate);
 
             ivFavorite = (ImageView) itemView.findViewById(R.id.ivFavorite);
-            ivLike = (ImageView) itemView.findViewById(R.id.ivLike);
+            ivLike = (ShineButton) itemView.findViewById(R.id.ivLike);
 
             tvNewsCountLike = (TextView) itemView.findViewById(R.id.tvNewsCountLike);
             tvCountPageView = (TextView) itemView.findViewById(R.id.tvCountPageView);

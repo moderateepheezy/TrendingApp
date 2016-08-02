@@ -54,7 +54,7 @@ public interface RetrofitInterface {
     @GET("/demo/yql/news/read/{user_id}")
     void getNewsRead(@Path("user_id") String userId, Callback<NewsTrendReadList> cb);
 
-    @GET("/demo/yql/news/{user_id}")
+    @GET("/demo/yql/news/archive/{user_id}")
     void getArchived(@Path("user_id") String userId, Callback<NewsTrendArchivedList> cb);
 
     @FormUrlEncoded

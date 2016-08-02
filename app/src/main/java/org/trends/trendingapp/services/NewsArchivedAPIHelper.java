@@ -34,11 +34,13 @@ public class NewsArchivedAPIHelper {
 
                     RealmList<NewsTrendArchived> realmList = postsDataWrapper.getData();
 
+                    Log.d("LogDAta", realmList.toString());
+
                     Realm realm = Realm.getDefaultInstance();
                     realm.beginTransaction();
 
-                    realm.clear(NewsTrendList.class);
-                    realm.clear(NewsTrend.class);
+                    realm.clear(NewsTrendArchivedList.class);
+                    realm.clear(NewsTrendArchived.class);
 
                     realm.copyToRealm(realmList);
 

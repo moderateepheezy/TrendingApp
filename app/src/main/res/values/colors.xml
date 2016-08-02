@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3b5998</color>
-    <color name="colorPrimaryDark">#2c53a6</color>
+    <color name="colorPrimary">#f2392f</color>
+    <color name="colorPrimaryDark">#cf3b2a</color>
     <color name="colorAccent">#f2392f</color>
     <color name="pressedFab">#cf3b2a</color>
     <color name="rippleFab">#df3a2f</color>
@@ -9,6 +9,16 @@
     <color name="translucent_grey">#455a64</color>
     <color name="bluePrimaryDark">#173641</color>
     <color name="PrimaryDarkColor">#392222</color>
+
+    <color name="tab_selected">@color/colorPrimary</color>
+    <color name="tab_unselected">#585757</color>
+
+    <color name="generic">#585757</color>
+
+
+    <color name="primary">#9E9E9E</color>
+    <color name="primary_dark">#20000000</color>
+    <color name="primary_dark_video">#000000</color>
 
 
     <color name="grey">#DDDDDD</color>

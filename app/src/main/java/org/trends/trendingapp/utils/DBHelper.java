@@ -41,7 +41,8 @@ public class DBHelper {
 
             if(version == 1){
                 Table newsTable = realm.getTable(NewsTrend.class);
-                long arch_status = newsTable.addColumn(ColumnType.STRING, "arch_status");
+                long checked = newsTable.addColumn(ColumnType.BOOLEAN, "checked");
+                version++;
             }
             return version;
         }

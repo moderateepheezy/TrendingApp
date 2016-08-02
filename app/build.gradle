@@ -18,15 +18,22 @@ repositories {
 
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'MyAndroidKey'
+            keyPassword 'Olatunji123!'
+            storeFile file('/Users/mac/keystores/android.jks')
+            storePassword 'Olatunji123!'
+        }
+    }
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
-
     defaultConfig {
         applicationId "org.trends.trendingapp"
-        minSdkVersion 17
+        minSdkVersion 16
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         multiDexEnabled true
     }
     dexOptions {
@@ -34,14 +41,13 @@ android {
         preDexLibraries = false
         javaMaxHeapSize "4g"
     }
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
-
     packagingOptions {
         exclude 'META-INF/services/javax.annotation.processing.Processor'
         exclude 'META-INF/LICENSE'
@@ -50,7 +56,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'
@@ -77,7 +83,9 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'net.oauth.core:oauth:20100527'
+    compile 'com.github.thorbenprimke:realm-searchview:0.9.1'
     compile 'com.gordonwong:material-sheet-fab:1.2.1'
+    compile 'com.sackcentury:shinebutton:0.1.4'
     compile('com.twitter.sdk.android:twitter:1.13.1@aar') {
         transitive = true;
     }

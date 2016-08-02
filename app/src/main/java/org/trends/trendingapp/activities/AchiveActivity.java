@@ -4,12 +4,12 @@ import android.content.res.Configuration;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,7 +36,6 @@ public class AchiveActivity extends AppCompatActivity implements
     private RecyclerView recyclerView;
     protected Realm realm;
 
-    public SwipeRefreshLayout refresh;
 
     public TestNewsArchivedAdapter adapter;
 
@@ -54,7 +53,13 @@ public class AchiveActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.new_list_fragment);
+        setContentView(R.layout.archive_new_list_fragment);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.arrow_left);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         realm = Realm.getDefaultInstance();
 
@@ -68,23 +73,6 @@ public class AchiveActivity extends AppCompatActivity implements
 
         /* Used when the data set is changed and this notifies the database to update the information */
         realm.addChangeListener(realmChangeListener);
-
-        refresh = (SwipeRefreshLayout) findViewById(R.id.refresh);
-        refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                NewsArchivedAPIHelper.getPosts(fbid, AchiveActivity.this);
-
-                (new Handler()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d("Swipe", "Refreshing Number");
-                        refresh.setRefreshing(false);
-                    }
-                }, 3000);
-
-            }
-        });
 
         initView();
 
@@ -133,7 +121,7 @@ public class AchiveActivity extends AppCompatActivity implements
 
     @Subscribe
     public void onPostSuccess(NewsArchivedAPIHelper.PostsInfoSuccess postInfo) {
-        setRefreshing(false);
+
     }
 
     public RealmResults<NewsTrendArchived> getPostsFromDb() {
@@ -144,7 +132,7 @@ public class AchiveActivity extends AppCompatActivity implements
     /* Present user with some error message when there's an issue while retrieving data */
     @Subscribe
     public void onPostFailure(NewsArchivedAPIHelper.PostsInfoFailure error) {
-        setRefreshing(false);
+
         displaySimpleConfirmSnackBar(recyclerView, error.getErrorMessage());
     }
 
@@ -157,15 +145,6 @@ public class AchiveActivity extends AppCompatActivity implements
 
     }
 
-
-    public void setRefreshing(final boolean refreshing) {
-        refresh.post(new Runnable() {
-            @Override
-            public void run() {
-                refresh.setRefreshing(refreshing);
-            }
-        });
-    }
 
     /*Default Snackbar for notifying user with some information*/
 
@@ -203,30 +182,23 @@ public class AchiveActivity extends AppCompatActivity implements
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        final RealmResults<NewsTrendArchived> newsTrendArchiveds = filter(getPostsFromDb(),query);
-        adapter.setFilter(newsTrendArchiveds);
+
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
         // User changed the text
+        final RealmResults<NewsTrendArchived> newsTrendArchiveds = filter(newText);
+        adapter.setFilter(newsTrendArchiveds);
         return false;
     }
 
 
-    private RealmResults<NewsTrendArchived> filter(RealmResults<NewsTrendArchived> models, String query){
+    private RealmResults<NewsTrendArchived> filter( String query) {
         query = query.toLowerCase();
 
-        RealmResults<NewsTrendArchived> filterTrendArchiveds = getPostsFromDb();
-        for(NewsTrendArchived model : models){
-            final String text = model.getTitle().toLowerCase();
-            if(text.contains(query)){
-                filterTrendArchiveds.add(model);
-            }
-        }
-        return filterTrendArchiveds;
+        return realm.where(NewsTrendArchived.class)
+                .contains("title", query, false).findAll();
     }
-
-
 }

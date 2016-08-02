@@ -61,7 +61,7 @@ public class TestNewsArchivedAdapter extends RealmBaseRecyclerViewAdapter<NewsTr
         user = TrendingApplication.getInstance().getPrefManager().getUser();
 
         fbid = user.getId();
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_news, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_archive_news, viewGroup, false);
         PostsViewHolder mediaViewHolder = new PostsViewHolder(v);
         return mediaViewHolder;
     }
@@ -93,13 +93,13 @@ public class TestNewsArchivedAdapter extends RealmBaseRecyclerViewAdapter<NewsTr
         }
 
 
-        if(postsData.getArch_status().equals("1")){
+        /*if(postsData.getArch_status().equals("1")){
             Log.d("logFavourite", String.valueOf(postsData.getLike_status()));
             isAchive = true;
             holder.ivFavorite.setImageResource(R.drawable.yildiz_dolu_kucuk);
         }else{
             holder.ivFavorite.setImageResource(R.drawable.yildiz_bos_kucuk);
-        }
+        }*/
 
         Spanned decodedTitle = Html.fromHtml(eventName);
 
@@ -410,7 +410,6 @@ public class TestNewsArchivedAdapter extends RealmBaseRecyclerViewAdapter<NewsTr
         return dateString;
     }
 
-
     public String getSmallDescp(String descp){
         String text = descp + "<font color='#f2732f'>  <strong>more...</strong></font>";
 
@@ -418,7 +417,7 @@ public class TestNewsArchivedAdapter extends RealmBaseRecyclerViewAdapter<NewsTr
     }
 
     public void setFilter(RealmResults<NewsTrendArchived> models) {
-        models.addAll(models);
+        this.realmResults = models;
         notifyDataSetChanged();
     }
 

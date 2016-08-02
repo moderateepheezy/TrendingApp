@@ -13,5 +13,14 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="facebook_app_id">1012925262084258</string>
+    <string name="facebook_app_id">282754515418120</string>
+
+        <string-array name="section_array">
+            <item>News</item>
+            <item>Events</item>
+            <item>Trends</item>
+            <item>Others</item>
+        </string-array>
+
+    <string name="DEVELOPER_KEY">AIzaSyBZD7zkYi6CV-XXfWb8E8o_2qGhRMb8Gm4</string>
 </resources>

@@ -21,6 +21,7 @@ import com.thefinestartist.finestwebview.FinestWebView;
 
 import org.trends.trendingapp.R;
 import org.trends.trendingapp.TrendingApplication;
+import org.trends.trendingapp.models.NewsTrendArchived;
 import org.trends.trendingapp.models.NewsTrendRead;
 import org.trends.trendingapp.models.ReadStatus;
 import org.trends.trendingapp.models.User;
@@ -61,7 +62,7 @@ public class TestNewsReadAdapter extends RealmBaseRecyclerViewAdapter<NewsTrendR
         user = TrendingApplication.getInstance().getPrefManager().getUser();
 
         fbid = user.getId();
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_news, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_read_news, viewGroup, false);
         PostsViewHolder mediaViewHolder = new PostsViewHolder(v);
         return mediaViewHolder;
     }
@@ -93,13 +94,13 @@ public class TestNewsReadAdapter extends RealmBaseRecyclerViewAdapter<NewsTrendR
         }
 
 
-        if(postsData.getArch_status().equals("1")){
+        /*if(postsData.getArch_status().equals("1")){
             Log.d("logFavourite", String.valueOf(postsData.getLike_status()));
             isAchive = true;
             holder.ivFavorite.setImageResource(R.drawable.yildiz_dolu_kucuk);
         }else{
             holder.ivFavorite.setImageResource(R.drawable.yildiz_bos_kucuk);
-        }
+        }*/
 
         Spanned decodedTitle = Html.fromHtml(eventName);
 
@@ -415,6 +416,11 @@ public class TestNewsReadAdapter extends RealmBaseRecyclerViewAdapter<NewsTrendR
         String text = descp + "<font color='#f2732f'>  <strong>more...</strong></font>";
 
         return text.substring(0, 50);
+    }
+
+    public void setFilter(RealmResults<NewsTrendRead> models) {
+        this.realmResults = models;
+        notifyDataSetChanged();
     }
 
 }

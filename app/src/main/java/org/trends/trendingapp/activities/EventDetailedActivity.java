@@ -29,6 +29,7 @@ public class EventDetailedActivity extends AppCompatActivity {
 
         initViews();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.arrow_left);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
