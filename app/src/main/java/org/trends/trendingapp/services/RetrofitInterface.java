@@ -33,6 +33,9 @@ public interface RetrofitInterface {
     @GET("/demo/yql/users/{user_id}/news/preferences")
     void getNewsPosts(@Path("user_id")String user_id, @Query("value")String preference, Callback<NewsTrendList> cb);
 
+    @GET("/demo/yql/news")
+    void getAllNews(Callback<NewsTrendList> cb);
+
     @GET("/demo/yql/news/like/{user_id}/{news_id}")
     void like(@Path("news_id") Integer newsItemId, @Path("user_id") String userId, Callback<ReadStatus> status);
 
@@ -50,6 +53,12 @@ public interface RetrofitInterface {
     @GET("/demo/yql/news/unarchive/{user_id}/{news_id}")
     void sendUnArchiveInfo(@Path("news_id") Integer newsItemId,
                            @Path("user_id") String userId, Callback<ReadStatus> status);
+
+    @FormUrlEncoded
+    @POST("/demo/yql/feedback")
+    void sendFeedback(@Field("content") float content, @Field("overall") float overall,
+                      @Field("ease")float ease, @Field("design")float design,
+                      @Field("general") String general, Callback<ReadStatus> status);
 
     @GET("/demo/yql/news/read/{user_id}")
     void getNewsRead(@Path("user_id") String userId, Callback<NewsTrendReadList> cb);

@@ -1,7 +1,7 @@
 package org.trends.trendingapp.models;
 
 /**
- * Created by serdarbuyukkanli on 29/02/16.
+ * Created by SimpuMind on 29/02/16.
  */
 public class ReadStatus {
 

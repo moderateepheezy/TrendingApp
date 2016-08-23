@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -177,7 +178,7 @@ public class EventsFragment extends Fragment implements EventsAdapter.EventListe
     * to the next screen and that ID wil be used to fetch remaining items
     */
     @Override
-    public void onItemClick(View view, Datum postsData) {
+    public void onItemClick(View view, final Datum postsData) {
 
         ActivityOptionsCompat optionsCompat = null;
 

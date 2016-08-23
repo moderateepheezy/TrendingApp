@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,6 +64,13 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
     public void onBindViewHolder(final PostsViewHolder holder, int position) {
 
         final Datum postsData = getItem(position);
+
+        if (position % 2 == 1) {
+            holder.llLeft.setGravity(Gravity.RIGHT);
+            holder.llRight.setGravity(Gravity.LEFT);
+            holder.ivArrowLeft.setVisibility(View.INVISIBLE);
+            holder.ivArrowRight.setVisibility(View.VISIBLE);
+        }
 
         String eventName = postsData.getName();
         String eventDate = postsData.getStart();
@@ -137,23 +145,33 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
 
         RelativeLayout postContentHolder;
 
-        public TextView startEvent;
-        public TextView eventName;
-        public TextView eventDescription;
+        public RobotoTextView startEvent;
+        public RobotoTextView eventName;
+        public RobotoTextView eventDescription;
         public ImageView mDisplayGeneratedImage;
-        public TextView sourceName;
+        public RobotoTextView sourceName;
         public ImageView sourceImage;
 
         public ImageView share;
+        public LinearLayout llLeft;
+        public LinearLayout llRight;
+
+        public ImageView ivArrowLeft;
+        public ImageView ivArrowRight;
 
         PostsViewHolder(View itemView) {
             super(itemView);
             postContentHolder = (RelativeLayout) itemView.findViewById(R.id.postContentHolder);
-            startEvent = (TextView) itemView.findViewById(R.id.event_start);
-            eventName = (TextView) itemView.findViewById(R.id.event_name);
-            eventDescription = (TextView) itemView.findViewById(R.id.event_description);
+            startEvent = (RobotoTextView) itemView.findViewById(R.id.event_start);
+            eventName = (RobotoTextView) itemView.findViewById(R.id.event_name);
+            ivArrowLeft = (ImageView) itemView.findViewById(R.id.ivArrowLeft);
+            ivArrowRight = (ImageView) itemView.findViewById(R.id.ivArrowRight);
+            llLeft = (LinearLayout) itemView.findViewById(R.id.llLeft);
+            llRight = (LinearLayout) itemView.findViewById(R.id.llRight);
+
+            eventDescription = (RobotoTextView) itemView.findViewById(R.id.event_description);
             mDisplayGeneratedImage = (ImageView) itemView.findViewById(R.id.rlv_name_view);
-            sourceName = (TextView) itemView.findViewById(R.id.sourceName);
+            sourceName = (RobotoTextView) itemView.findViewById(R.id.sourceName);
             sourceImage = (ImageView) itemView.findViewById(R.id.sourceImg);
             share = (ImageView) itemView.findViewById(R.id.ivShare);
         }

@@ -65,35 +65,38 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:id="@+id/sourceImg"/>
-                    <TextView
+                    <org.trends.trendingapp.customviews.RobotoTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="2dp"
                         android:id="@+id/sourceName"
                         android:textColor="@color/colorAccent"
+                        app:foundFont="@integer/font_roboto_light"
                         android:textSize="12dp"/>
                 </LinearLayout>
 
-                <TextView
+                <org.trends.trendingapp.customviews.RobotoTextView
                     android:id="@+id/event_name"
                     style="@style/boldTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"
-                    android:textSize="16dp"
+                    android:textSize="12dp"
                     android:ellipsize="end"
-                    android:maxLines="2"
+                    android:maxLines="3"
+                    app:foundFont="@integer/font_roboto_bold"
                     android:textStyle="bold" />
 
-                <TextView
+                <org.trends.trendingapp.customviews.RobotoTextView
                     android:id="@+id/event_start"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:textColor="@color/black"
+                    app:foundFont="@integer/font_roboto_light"
                     android:textSize="10dp" />
 
-                <TextView
+                <org.trends.trendingapp.customviews.RobotoTextView
                     android:id="@+id/event_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -101,6 +104,7 @@
                     android:lines="2"
                     android:ellipsize="end"
                     android:maxLines="1"
+                    app:foundFont="@integer/font_roboto_light"
                     android:textColor="@color/black"
                     android:textSize="13dp" />
 

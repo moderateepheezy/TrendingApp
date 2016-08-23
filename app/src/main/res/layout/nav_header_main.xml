@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/nav_header_height"
+    android:layout_height="wrap_content"
     android:background="@drawable/side_nav_bar"
     android:gravity="bottom"
     android:orientation="vertical"
@@ -11,25 +11,45 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/fb_image"
-        android:layout_width="70dp"
-        android:layout_height="50dp"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:src="@android:drawable/sym_def_app_icon" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/fb_image"
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:paddingTop="@dimen/nav_header_vertical_spacing"
+            android:visibility="gone"
+            android:src="@android:drawable/sym_def_app_icon" />
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:visibility="visible"
+            android:id="@+id/btnLogin"
+            android:text="Login"/>
+
+    </LinearLayout>
+
 
     <org.trends.trendingapp.customviews.RobotoTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:id="@+id/fb_name"
-        android:text="Android Studio"
+        android:visibility="gone"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <org.trends.trendingapp.customviews.RobotoTextView
         android:id="@+id/fb_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:paddingBottom="@dimen/nav_header_vertical_spacing"
         android:text="android.studio@android.com" />
 
 </LinearLayout>

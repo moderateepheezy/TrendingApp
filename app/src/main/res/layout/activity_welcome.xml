@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="7dp"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.trends.trendingapp.activities.FeedBackActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="10dp">
+
+            <org.trends.trendingapp.customviews.RobotoTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/review_title"
+                android:textSize="18dp"
+                android:id="@+id/question"
+                android:layout_marginBottom="8dp"
+                app:foundFont="@integer/font_roboto_light"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/linContent"
+                android:layout_below="@+id/question">
+
+                <org.trends.trendingapp.customviews.RobotoTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Content"
+                    android:layout_gravity="center"
+                    android:textSize="16dp"
+                    app:foundFont="@integer/font_roboto_bold"/>
+
+                <RatingBar
+                    android:id="@+id/ratingBarContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:numStars="5"
+                    android:stepSize="1.0"
+                    android:rating="0.0" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="10dp">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/linDesign">
+
+                <org.trends.trendingapp.customviews.RobotoTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Design"
+                    android:layout_gravity="center"
+                    android:textSize="16dp"
+                    app:foundFont="@integer/font_roboto_bold"/>
+
+                <RatingBar
+                    android:id="@+id/ratingBarDesign"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:numStars="5"
+                    android:stepSize="1.0"
+                    android:rating="0.0" />
+            </LinearLayout>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="10dp">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/linOverall">
+
+                <org.trends.trendingapp.customviews.RobotoTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ease Of Use"
+                    android:layout_gravity="center"
+                    android:textSize="16dp"
+                    app:foundFont="@integer/font_roboto_bold"/>
+
+                <RatingBar
+                    android:id="@+id/ratingBarEase"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:numStars="5"
+                    android:stepSize="1.0"
+                    android:rating="0.0" />
+            </LinearLayout>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="10dp">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/lin">
+
+                <org.trends.trendingapp.customviews.RobotoTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Over All Performance"
+                    android:layout_gravity="center"
+                    android:textSize="16dp"
+                    app:foundFont="@integer/font_roboto_bold"/>
+
+                <RatingBar
+                    android:id="@+id/ratingBarOverall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:numStars="5"
+                    android:stepSize="1.0"
+                    android:rating="0.0" />
+            </LinearLayout>
+        </RelativeLayout>
+
+
+        <org.trends.trendingapp.customviews.RobotoTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="COMMENTS ABOUT THE APP"
+            android:textSize="18dp"
+            android:id="@+id/questionssss"
+            app:foundFont="@integer/font_roboto_bold"/>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="200px"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="5dp"
+            android:background="@drawable/back_border">
+            <EditText
+                android:id="@+id/addedcomment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                android:typeface="serif"
+                android:lines="10"
+                android:gravity="top|start"
+                android:background="#fff"
+                android:layout_margin="10dp"
+                android:inputType="textMultiLine"
+                android:textStyle="italic"/>
+
+        </RelativeLayout>
+
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/sendFeed"
+            android:textColor="@color/white"
+            android:layout_marginTop="5dp"
+            android:elevation="4dp"
+            android:background="@color/colorAccent"
+            android:text="SEND YOUR FEEDBACK"/>
+
+
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

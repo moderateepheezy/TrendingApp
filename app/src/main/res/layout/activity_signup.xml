@@ -24,7 +24,18 @@
         android:layout_gravity="center_horizontal"
         android:background="#cc4fc8ed"
         android:layout_margin="8dp"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/skipLogin"
         android:textColor="#ffffffff" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Skip Login"
+        android:id="@+id/skipLogin"
+        android:background="@android:color/transparent"
+        android:layout_margin="8dp"
+        android:layout_alignParentBottom="true"
+        android:textColor="#ccffffff"
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

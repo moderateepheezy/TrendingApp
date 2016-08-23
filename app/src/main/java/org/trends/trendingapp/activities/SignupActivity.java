@@ -1,11 +1,17 @@
 package org.trends.trendingapp.activities;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.ResultReceiver;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import com.facebook.CallbackManager;
@@ -23,22 +29,29 @@ import org.trends.trendingapp.R;
 import org.trends.trendingapp.TrendingApplication;
 import org.trends.trendingapp.models.User;
 
+import java.io.File;
 import java.util.Arrays;
+import java.util.Calendar;
 
 public class SignupActivity extends AppCompatActivity {
 
+    private static final String TAG = SignupActivity.class.getSimpleName();
     public static CallbackManager callbackmanager;
 
-    private Button fbbutton;
+    private Button fbbutton, skipLogin;
     private static String facebook_id, f_name, email_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         facebookSDKInitialize();
         setContentView(R.layout.activity_signup);
+        checkLogin();
 
         fbbutton = (Button) findViewById(R.id.facebookd);
+        skipLogin = (Button) findViewById(R.id.skipLogin);
 
         fbbutton.setOnClickListener(new View.OnClickListener() {
 
@@ -46,6 +59,15 @@ public class SignupActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Call private method
                 onFblogin();
+            }
+        });
+
+        skipLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SignupActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
@@ -77,10 +99,13 @@ public class SignupActivity extends AppCompatActivity {
                                     email_id, login_result.getAccessToken().getToken());
 
                             TrendingApplication.getInstance().getPrefManager().storeUser(user);
-
-                            Intent i = new Intent(SignupActivity.this, MainActivity.class);
-                            Log.d("FaceBookID", facebook_id);
+                            //TrendingApplication.getInstance().deleteCache(getApplicationContext());
+                            Intent i = getBaseContext().getPackageManager()
+                                    .getLaunchIntentForPackage( getBaseContext().getPackageName() );
+                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(i);
+                            //Intent intent = new Intent(SignupActivity.this, MainActivity.class);
+                           // startActivity(intent);
                             finish();
                         } catch (JSONException e) {
                             // TODO Auto-generated catch block
@@ -92,7 +117,6 @@ public class SignupActivity extends AppCompatActivity {
         Bundle permission_param = new Bundle();
         permission_param.putString("fields", "id,name,email,picture.width(120).height(120)");
         data_request.setParameters(permission_param);
-        data_request.executeAsync();
         data_request.executeAsync();
 
     }
@@ -133,4 +157,15 @@ public class SignupActivity extends AppCompatActivity {
     public static void checkLogin(){
         LoginManager.getInstance().logOut();
     }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        //This method is called when the up button is pressed. Just the pop back stack.
+        Log.d(TAG,"--onSupportNavigateUp()--");
+        getSupportFragmentManager().popBackStack();
+        super.onBackPressed();
+        return true;
+    }
+
+
 }

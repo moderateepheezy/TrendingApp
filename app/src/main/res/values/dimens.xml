@@ -35,4 +35,11 @@
     <dimen name="note_corner_radius">2dp</dimen>
     <dimen name="note_textsize">14sp</dimen>
     <dimen name="note_title_textsize">24sp</dimen>
+
+    <dimen name="dots_height">30dp</dimen>
+    <dimen name="dots_margin_bottom">20dp</dimen>
+    <dimen name="img_width_height">120dp</dimen>
+    <dimen name="slide_title">30dp</dimen>
+    <dimen name="slide_desc">16dp</dimen>
+    <dimen name="desc_padding">40dp</dimen>
 </resources>

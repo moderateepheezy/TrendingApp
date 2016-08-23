@@ -22,7 +22,7 @@ public class NewsTrend extends RealmObject {
     private int dislike_count;
     private int read_status;
     private int news_id;
-    private String arch_status;
+    private int arch_status;
     private boolean checked;
 
 
@@ -178,11 +178,13 @@ public class NewsTrend extends RealmObject {
         this.news_id = news_id;
     }
 
-    public String getArch_status() {
+    public int getArch_status() {
         return arch_status;
     }
 
-    public void setArch_status(String arch_status) {
+    public void setArch_status(int arch_status) {
         this.arch_status = arch_status;
     }
+
+
 }

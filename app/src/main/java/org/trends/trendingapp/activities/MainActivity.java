@@ -1,7 +1,9 @@
 package org.trends.trendingapp.activities;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -25,8 +28,10 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +50,7 @@ import org.trends.trendingapp.gcm.GCMRegistrationIntentService;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -53,6 +59,9 @@ public class MainActivity extends AppCompatActivity
 
     public static String POSITION = "POSITION";
     private BroadcastReceiver mRegistrationBroadCastReceiver;
+
+    public static final String PREF_KEY_FIRST_START = "com.heinrichreimersoftware.materialintro.demo.PREF_KEY_FIRST_START";
+    public static final int REQUEST_CODE_INTRO = 1;
 
     private TabLayout tabLayout;
     private ViewPager vp;
@@ -63,13 +72,6 @@ public class MainActivity extends AppCompatActivity
     static String id;
     public String access_tokens;
 
-    private int[] imageResId = {
-            R.drawable.newspaper_black,
-            R.drawable.calendar_black,
-            R.drawable.chart_line_black,
-            R.drawable.youtube_play_black
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,24 +80,25 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         showHashKey(getApplicationContext());
 
+        boolean firstStart = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(PREF_KEY_FIRST_START, true);
 
         User user = TrendingApplication.getInstance().getPrefManager().getUser();
 
-        if (TrendingApplication.getInstance().getPrefManager().getUser() == null) {
-            SignupActivity.checkLogin();
-            startActivity(new Intent(this, SignupActivity.class));
-            finish();
-        }else {
-            emails = user.getEmail();
-            fullnames = user.getName();
-            id = user.getId();
-            access_tokens = user.getAccess_token();
+
+        if(firstStart){
+            Intent intent = new Intent(this, WelcomeScreenActivity.class);
+            startActivityForResult(intent, REQUEST_CODE_INTRO);
+            //finish();
         }
+
 
         initViewPager();
         initTabLayout();
+        myPagerAdapter.notifyDataSetChanged();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -109,17 +112,44 @@ public class MainActivity extends AppCompatActivity
         CircleImageView fb_image = (CircleImageView) headerLayout.findViewById(R.id.fb_image);
         RobotoTextView fb_username = (RobotoTextView) headerLayout.findViewById(R.id.fb_name);
         RobotoTextView fb_email = (RobotoTextView) headerLayout.findViewById(R.id.fb_email);
+        Button btnLogin = (Button) headerLayout.findViewById(R.id.btnLogin);
         navigationView.setNavigationItemSelectedListener(this);
+        if (TrendingApplication.getInstance().getPrefManager().getUser() != null) {
+            btnLogin.setVisibility(View.GONE);
+            fb_image.setVisibility(View.VISIBLE);
+            fb_username.setVisibility(View.VISIBLE);
+            fb_email.setVisibility(View.VISIBLE);
+            emails = user.getEmail();
+            fullnames = user.getName();
+            id = user.getId();
+            access_tokens = user.getAccess_token();
 
-        Glide
-                .with(this)
-                .load("https://graph.facebook.com/me/picture?type=normal&method=GET&access_token="+ access_tokens)
-                .placeholder(R.drawable.ic_account_circle_64dp)
-                .fitCenter()
-                .into(fb_image);
+            Glide
+                    .with(this)
+                    .load("https://graph.facebook.com/me/picture?type=normal&method=GET&access_token="+ access_tokens)
+                    .placeholder(R.drawable.ic_account_circle_64dp)
+                    .fitCenter()
+                    .into(fb_image);
 
-        fb_username.setText(fullnames);
-        fb_email.setText(emails);
+            fb_username.setText(fullnames);
+            fb_email.setText(emails);
+        }
+        else{
+            btnLogin.setVisibility(View.VISIBLE);
+            fb_image.setVisibility(View.GONE);
+            fb_username.setVisibility(View.GONE);
+            fb_email.setVisibility(View.GONE);
+
+            btnLogin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, SignupActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        }
+
 
 
         mRegistrationBroadCastReceiver = new BroadcastReceiver() {
@@ -199,15 +229,14 @@ public class MainActivity extends AppCompatActivity
     }
     private void initViewPager() {
         vp = (ViewPager) findViewById(R.id.vp);
-        myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), getApplicationContext());
-        vp.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), getApplicationContext()));
+        myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), getApplicationContext(), id);
+        vp.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), getApplicationContext(), id));
     }
 
 
     private void initTabLayout() {
 
         vp.setOffscreenPageLimit(MyPagerAdapter.NUM_ITEMS);
-
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(vp);
 
@@ -323,6 +352,21 @@ public class MainActivity extends AppCompatActivity
         if(requestCode == 1 && resultCode == Activity.RESULT_OK) {
             //some code
         }
+        if (requestCode == REQUEST_CODE_INTRO) {
+            if (resultCode == RESULT_OK) {
+                PreferenceManager.getDefaultSharedPreferences(this).edit()
+                        .putBoolean(PREF_KEY_FIRST_START, false)
+                        .apply();
+            }
+            else {
+                PreferenceManager.getDefaultSharedPreferences(this).edit()
+                        .putBoolean(PREF_KEY_FIRST_START, true)
+                        .apply();
+                //User cancelled the intro so we'll finish this activity too.
+                finish();
+            }
+        }
+
     }
 
 
@@ -357,5 +401,16 @@ public class MainActivity extends AppCompatActivity
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         vp.setCurrentItem(savedInstanceState.getInt(POSITION));
+    }
+
+    public  void restartSelf() {
+        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        am.set(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + 500, // one second
+                PendingIntent.getActivity(MainActivity.this, 0, getIntent(), PendingIntent.FLAG_ONE_SHOT
+                        | PendingIntent.FLAG_CANCEL_CURRENT));
+        Intent i = getBaseContext().getPackageManager()
+                .getLaunchIntentForPackage(getBaseContext().getPackageName());
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(i);
     }
 }

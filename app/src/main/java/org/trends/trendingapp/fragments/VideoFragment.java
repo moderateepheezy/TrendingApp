@@ -2,8 +2,10 @@ package org.trends.trendingapp.fragments;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -35,6 +37,8 @@ public class VideoFragment extends Fragment{
     private VideoCategoryRecyclerAdapter videoRecyclerAdapter;
     private List<VideoCategoryInfo> videoList;
 
+    public SwipeRefreshLayout refresh;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,11 +48,28 @@ public class VideoFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.video_list_fragment, container, false);
         videoList = new ArrayList<>();
+        refresh = (SwipeRefreshLayout) v.findViewById(R.id.refresh);
         RecyclerView recycler = (RecyclerView) v.findViewById(R.id.recyclerView);
         recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         videoRecyclerAdapter = new VideoCategoryRecyclerAdapter(getActivity(), videoList, R.layout.row_videos);
         recycler.setAdapter(videoRecyclerAdapter);
         new LoadVideoData().execute("");
+
+        refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new LoadVideoData().execute("");
+
+                (new Handler()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("Swipe", "Refreshing Number");
+                        refresh.setRefreshing(false);
+                    }
+                }, 3000);
+
+            }
+        });
         return v;
     }
 

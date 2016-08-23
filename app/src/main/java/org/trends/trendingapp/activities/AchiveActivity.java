@@ -66,9 +66,11 @@ public class AchiveActivity extends AppCompatActivity implements
 
         User user = TrendingApplication.getInstance().getPrefManager().getUser();
 
-        fbid = user.getId();
-
-
+        if(user != null) {
+            fbid = user.getId();
+        }else{
+            fbid = "1111";
+        }
         NewsArchivedAPIHelper.getPosts(fbid,this);
 
         /* Used when the data set is changed and this notifies the database to update the information */

@@ -10,10 +10,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.trends.trendingapp.R;
+import org.trends.trendingapp.TrendingApplication;
 import org.trends.trendingapp.fragments.EventsFragment;
+import org.trends.trendingapp.fragments.NewsAllFragment;
 import org.trends.trendingapp.fragments.NewsFragment;
 import org.trends.trendingapp.fragments.TrendsFragment;
 import org.trends.trendingapp.fragments.VideoFragment;
+import org.trends.trendingapp.models.User;
 
 import java.util.ArrayList;
 
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 public class MyPagerAdapter extends FragmentPagerAdapter {
     private Context context;
     private final String[] mTitles = {"News", "Events", "Trends", "Videos"};
+    private String fbid;
 
     public static final int NUM_ITEMS = 4;
     public static final int NEWS_POST = 0;
@@ -37,10 +41,12 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
             R.drawable.youtube_play_black
     };
 
-    public MyPagerAdapter(FragmentManager fm,  Context context) {
+    public MyPagerAdapter(FragmentManager fm,  Context context, String fbid) {
         super(fm);
         this.context = context;
+        this.fbid = fbid;
     }
+
 
     @Override
     public int getCount() {
@@ -84,6 +90,11 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
         ImageView img = (ImageView) v.findViewById(R.id.imgView);
         img.setImageResource(imageResId[position]);
         return v;
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
     }
 }
 

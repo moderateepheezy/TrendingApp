@@ -2,6 +2,8 @@ package org.trends.trendingapp.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
@@ -21,13 +23,13 @@ import com.squareup.okhttp.OkHttpClient;
 import com.thefinestartist.finestwebview.FinestWebView;
 
 import org.trends.trendingapp.R;
-import org.trends.trendingapp.TrendingApplication;
-import org.trends.trendingapp.activities.MainActivity;
+import org.trends.trendingapp.customviews.RobotoTextView;
 import org.trends.trendingapp.models.NewsTrend;
 import org.trends.trendingapp.models.ReadStatus;
 import org.trends.trendingapp.models.User;
 import org.trends.trendingapp.services.RetrofitInterface;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -42,16 +44,29 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
     public EventListener eventListener;
 
     RetrofitInterface restApi;
-    static User user;
     static  String fbid;
+    private User user;
 
-    public boolean isLike = true;
+    public boolean isLike = false;
     public boolean isAchive = true;
 
-    public TestNewsAdapter(Context context, RealmResults<NewsTrend> realmResults, boolean automaticUpdate) {
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    String PREFSNAME = "FAVS";
+    String ARCHI = "ARCHVS";
+    String id;
+    int favflag;
+    int archFlag;
+
+    private SharedPreferences preferences;
+
+    public TestNewsAdapter(Context context, RealmResults<NewsTrend> realmResults,
+                           boolean automaticUpdate, User user) {
         super(context, realmResults, automaticUpdate);
         this.realmResults = realmResults;
         this.context = context;
+        this.user = user;
     }
 
     public void setEventListener(EventListener eventListener) {
@@ -60,7 +75,6 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
 
     @Override
     public PostsViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        user = TrendingApplication.getInstance().getPrefManager().getUser();
         fbid = user.getId();
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_news, viewGroup, false);
         PostsViewHolder mediaViewHolder = new PostsViewHolder(v);
@@ -68,14 +82,9 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
     }
 
     @Override
-    public void onBindViewHolder(final PostsViewHolder holder, int position) {
+    public void onBindViewHolder(final PostsViewHolder holder, final int position) {
 
         final NewsTrend postsData = getItem(position);
-
-        final MainActivity mainActivity = (MainActivity) context;
-
-        if (holder.ivLike != null)
-            holder.ivLike.init(mainActivity);
 
         if (position % 2 == 1) {
             holder.llLeft.setGravity(Gravity.RIGHT);
@@ -87,39 +96,7 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
         String eventName = postsData.getTitle();
         String eventDate = postsData.getTimestamp();
         holder.sourceName.setText(postsData.getType());
-
-
-        if(postsData.getLike_status() == 1){
-            Log.d("logLike", String.valueOf(postsData.getLike_status()));
-            isLike = true;
-            holder.ivLike.setChecked(true);
-        } else {
-            holder.ivLike.setChecked(false);
-            isLike = false;
-        }
-
-
-        if(postsData.getArch_status().equals("1")){
-            Log.d("logFavourite", String.valueOf(postsData.getLike_status()));
-            isAchive = true;
-            holder.ivFavorite.setImageResource(R.drawable.yildiz_dolu_kucuk);
-        }else{
-            holder.ivFavorite.setImageResource(R.drawable.yildiz_bos_kucuk);
-            isAchive = false;
-        }
-
         Spanned decodedTitle = Html.fromHtml(eventName);
-
-        if(postsData.getType().equals("Bella Naija")){
-            holder.sourceImg.setImageResource(R.drawable.bella);
-        }else if(postsData.getType().equals("Punch")){
-            holder.sourceImg.setImageResource(R.drawable.punch);
-        }else if(postsData.getType().equals("Linda Ikeji")){
-            holder.sourceImg.setImageResource(R.drawable.lib);
-        }else if(postsData.getType().equals("Pulse")){
-            holder.sourceImg.setImageResource(R.drawable.pulse_logo);
-        }
-
 
         holder.tvCountPageView.setText(postsData.getRead_count() + " Views");
         holder.tvNewsCountLike.setText("" + postsData.getLike_count());
@@ -129,11 +106,58 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
         String text = postsData.getContent() + "<font color='red'>  <strong>More...</strong></font>";
         holder.tvNewsShortText.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
 
-            Glide.with(context)
-                    .load(postsData.getImage())
-                    .centerCrop()
-                    .placeholder(R.drawable.tw_logo)
-                    .into(holder.ivNewsImage);
+        if (postsData.getType().equals("Bella Naija")) {
+            holder.sourceImg.setImageResource(R.drawable.bella);
+        } else if (postsData.getType().equals("Punch")) {
+            holder.sourceImg.setImageResource(R.drawable.punch);
+        } else if (postsData.getType().equals("Linda Ikeji")) {
+            holder.sourceImg.setImageResource(R.drawable.lib);
+        } else if (postsData.getType().equals("Pulse")) {
+            holder.sourceImg.setImageResource(R.drawable.pulse_logo);
+        }
+        // holder.sourceName.setText(postsData.getType());
+
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        Glide.with(context)
+                .load(postsData.getImage())
+                .centerCrop()
+                .placeholder(R.drawable.tw_logo)
+                .into(holder.ivNewsImage);
+
+
+        id= String.valueOf(postsData.getNews_id());
+        sharedPreferences=context.getSharedPreferences(PREFSNAME, 0);
+        favflag=sharedPreferences.getInt(id, 0);
+
+        sharedPreferences=context.getSharedPreferences(ARCHI, 0);
+        archFlag = sharedPreferences.getInt(id, 0);
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        editor = preferences.edit();
+        editor.putInt("favCount",  postsData.getLike_count());
+        editor.apply();
+
+
+
+        if (postsData.getLike_status() == 1) {
+            isLike = true;
+            holder.ivLike.setChecked(true);
+        } else {
+            holder.ivLike.setChecked(false);
+            isLike = false;
+        }
+
+
+        if (postsData.getArch_status() == 1) {
+            Log.d("logFavourite", String.valueOf(postsData.getLike_status()));
+            isAchive = true;
+            holder.ivFavorite.setImageResource(R.drawable.yildiz_dolu_kucuk);
+        } else {
+            holder.ivFavorite.setImageResource(R.drawable.yildiz_bos_kucuk);
+            isAchive = false;
+        }
 
 
         holder.llRight.setOnClickListener(new View.OnClickListener() {
@@ -172,7 +196,7 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
             @Override
             public void onClick(View v) {
 
-                String shareBody =  postsData.getHref();
+                String shareBody = postsData.getHref();
 
                 Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
@@ -187,11 +211,28 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
             @Override
             public void onClick(View v) {
 
-                if(!isAchive){
+                Log.d("logFavourite", "like OnClickListener");
+
+                if (!isAchive) {
+                    id=String.valueOf(postsData.getNews_id());
+                    archFlag=sharedPreferences.getInt(id, 0);
+                    sharedPreferences=context.getSharedPreferences(ARCHI, 0);
+                    editor=sharedPreferences.edit();
+                    editor.putInt(id, 1);
+                    editor.apply();
+                    archFlag=sharedPreferences.getInt(id,0);
                     archive(postsData.getNews_id(), postsData.getExt_date());
                     holder.ivFavorite.setImageResource(R.drawable.yildiz_dolu_kucuk);
                     isAchive = true;
-                }else{
+                } else {
+                    id=String.valueOf(postsData.getNews_id());
+                    archFlag=sharedPreferences.getInt(id, 0);
+
+                    sharedPreferences=context.getSharedPreferences(ARCHI,0);
+                    editor =sharedPreferences.edit();
+                    editor.putInt(String.valueOf(id),0);
+                    editor.apply();
+                    archFlag=sharedPreferences.getInt(String.valueOf(id),0);
                     unArchive(postsData.getNews_id());
                     holder.ivFavorite.setImageResource(R.drawable.yildiz_bos_kucuk);
                     isAchive = false;
@@ -200,22 +241,44 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
             }
         });
 
-
-
-        holder.ivLike.setTag(holder);
         holder.ivLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PostsViewHolder viewHolder =(PostsViewHolder) v.getTag();
                 if (!isLike) {
+                    id=String.valueOf(postsData.getNews_id());
+                     preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putInt("favCount",  Integer.parseInt(holder.tvNewsCountLike.getText().toString()) + 1);
+                    editor.apply();
+                    favflag=sharedPreferences.getInt(id, 0);
+                    sharedPreferences=context.getSharedPreferences(PREFSNAME, 0);
+                    editor=sharedPreferences.edit();
+                    editor.putInt(id, 1);
+                    editor.apply();
+                    favflag=sharedPreferences.getInt(id,0);
                     like(postsData.getNews_id());
-                    viewHolder.tvNewsCountLike.setText("" + (Integer.parseInt(holder.tvNewsCountLike.getText().toString()) + 1));
-                    viewHolder.ivLike.setChecked(true);
+                     preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                    int name = preferences.getInt("favCount", 0);
+                    holder.tvNewsCountLike.setText(String.valueOf(name));
+                    holder.ivLike.setChecked(true);
                     isLike = true;
                 } else {
-                    unlike(postsData.getNews_id());
-                    viewHolder.tvNewsCountLike.setText("" + (Integer.parseInt(holder.tvNewsCountLike.getText().toString()) - 1));
-                    viewHolder.ivLike.setChecked(false);
+                    id=String.valueOf(postsData.getNews_id());
+                    preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putInt("favCount",   Integer.parseInt(holder.tvNewsCountLike.getText().toString()) -  1);
+                    editor.apply();
+                    favflag=sharedPreferences.getInt(id, 0);
+                    sharedPreferences=context.getSharedPreferences(PREFSNAME,0);
+                    editor =sharedPreferences.edit();
+                    editor.putInt(String.valueOf(id),0);
+                    editor.apply();
+                    favflag=sharedPreferences.getInt(String.valueOf(id),0);
+                    like(postsData.getNews_id());
+                    preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                    int name = preferences.getInt("favCount", 0);
+                    holder.tvNewsCountLike.setText(String.valueOf(name));
+                    holder.ivLike.setChecked(false);
                     isLike = false;
 
                 }
@@ -223,12 +286,23 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
             }
         });
 
+        if (favflag==0){
+            holder.ivLike.setChecked(false);
+        }else {
+            holder.ivLike.setChecked(true);
+        }
 
+        if (archFlag==0){
+            holder.ivFavorite.setImageResource(R.drawable.yildiz_bos_kucuk);
+        } else {
+            holder.ivFavorite.setImageResource(R.drawable.yildiz_dolu_kucuk);
+        }
 
     }
 
     private void like(final int newsItemId) {
         setupRestClient();
+        Log.e("logfb", "hunk" + fbid);
         restApi.like(newsItemId, fbid, new Callback<ReadStatus>() {
             @Override
             public void success(ReadStatus readStatus, Response response) {
@@ -345,10 +419,10 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
 
     public static class PostsViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView tvNewsDate;
-        public TextView tvNewsTitle;
-        public TextView tvNewsShortText;
-        public TextView sourceName;
+        public RobotoTextView tvNewsDate;
+        public RobotoTextView tvNewsTitle;
+        public RobotoTextView tvNewsShortText;
+        public RobotoTextView sourceName;
         public ImageView sourceImg;
 
         RelativeLayout postContentHolder;
@@ -371,7 +445,6 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
         public TextView tvCountPageView;
         public TextView tvNewsCountLike;
 
-
         PostsViewHolder(View itemView) {
             super(itemView);
             postContentHolder = (RelativeLayout) itemView.findViewById(R.id.postContentHolder);
@@ -383,10 +456,10 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
 
             ivShare = (ImageView) itemView.findViewById(R.id.ivShare);
             sourceImg = (ImageView) itemView.findViewById(R.id.sourceImg);
-            sourceName = (TextView) itemView.findViewById(R.id.sourceName);
-            tvNewsTitle = (TextView) itemView.findViewById(R.id.tvNewsTitle);
-            tvNewsShortText = (TextView) itemView.findViewById(R.id.tvNewsShortText);
-            tvNewsDate = (TextView) itemView.findViewById(R.id.tvNewsDate);
+            sourceName = (RobotoTextView) itemView.findViewById(R.id.sourceName);
+            tvNewsTitle = (RobotoTextView) itemView.findViewById(R.id.tvNewsTitle);
+            tvNewsShortText = (RobotoTextView) itemView.findViewById(R.id.tvNewsShortText);
+            tvNewsDate = (RobotoTextView) itemView.findViewById(R.id.tvNewsDate);
 
             ivFavorite = (ImageView) itemView.findViewById(R.id.ivFavorite);
             ivLike = (ShineButton) itemView.findViewById(R.id.ivLike);
@@ -412,10 +485,8 @@ public class TestNewsAdapter extends RealmBaseRecyclerViewAdapter<NewsTrend, Tes
     }
 
 
-    public String getSmallDescp(String descp){
-        String text = descp + "<font color='#f2732f'>  <strong>more...</strong></font>";
+    public void isUserLoginedIn(PostsViewHolder holder){
 
-        return text.substring(0, 50);
     }
 
 }

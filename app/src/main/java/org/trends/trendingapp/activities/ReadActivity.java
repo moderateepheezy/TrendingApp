@@ -63,7 +63,11 @@ public class ReadActivity extends AppCompatActivity implements
 
         User user = TrendingApplication.getInstance().getPrefManager().getUser();
 
-        fbid = user.getId();
+        if(user != null) {
+            fbid = user.getId();
+        }else{
+            fbid = "1111";
+        }
 
         NewsReadAPIHelper.getPosts(fbid,this);
 

@@ -15,12 +15,31 @@
 
     <string name="facebook_app_id">282754515418120</string>
 
-        <string-array name="section_array">
-            <item>News</item>
-            <item>Events</item>
-            <item>Trends</item>
-            <item>Others</item>
-        </string-array>
+    <string-array name="section_array">
+        <item>News</item>
+        <item>Events</item>
+        <item>Trends</item>
+        <item>Others</item>
+    </string-array>
+
+    <string name="title_news">News Trending Locally</string>
+    <string name="title_events">Events in Nigeria</string>
+    <string name="title_trends">Tending on Twitter</string>
+    <string name="title_videos">Popular Videos</string>
+
+    <string name="description_news">Be the first to know the trending news and what\'s happening locally.</string>
+    <string name="description_events">Know some of the exciting and trending events and favourite them to attend later.</string>
+    <string name="description_trends">Know what is trending at a particular time.</string>
+    <string name="description_videos">Watch trending and entertaining videos across various industries.</string>
+
 
     <string name="DEVELOPER_KEY">AIzaSyBZD7zkYi6CV-XXfWb8E8o_2qGhRMb8Gm4</string>
+    <string name="slide_1_title">Parrot</string>
+    <string name="label_button_cta_canteen_intro">GET STARTED</string>
+    <string name="review_title">Based on your experience with the application, kindly rate the application along the following criteria to help with the future improvement of the application. Thank you for your time!</string>
+    <string name="disagree">Strongly Disagree</string>
+    <string name="neutral">Neutral</string>
+    <string name="agree">Poor</string>
+    <string name="strongly_disagree_txt">Very Good</string>
+    <string name="commment">Describe functions or features you will like to see changed or added to the application. Feel free to also make general comment about the application.</string>
 </resources>

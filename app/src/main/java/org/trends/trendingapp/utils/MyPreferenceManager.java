@@ -34,6 +34,8 @@ public class MyPreferenceManager {
     private static final String KEY_ACCESS_TOKEN = "access_token";
     private static final String KEY_NOTIFICATIONS = "notifications";
 
+    private static final String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
+
     // Constructor
     public MyPreferenceManager(Context context) {
         this._context = context;
@@ -88,5 +90,14 @@ public class MyPreferenceManager {
     public void clear() {
         editor.clear();
         editor.commit();
+    }
+
+    public void setFirstTimeLaunch(boolean isFirstTime) {
+        editor.putBoolean(IS_FIRST_TIME_LAUNCH, isFirstTime);
+        editor.commit();
+    }
+
+    public boolean isFirstTimeLaunch() {
+        return pref.getBoolean(IS_FIRST_TIME_LAUNCH, true);
     }
 }

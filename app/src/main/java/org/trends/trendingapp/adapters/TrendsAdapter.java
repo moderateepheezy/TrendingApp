@@ -72,10 +72,10 @@ public class TrendsAdapter extends RealmBaseRecyclerViewAdapter<Trends, TrendsAd
                 // You can use the value later on to check what the selected item was.
                 // The value can be any Object, here we're using ints.
                 new SwipeItem(0, postsData.getTweets_sata().get(0).getUser(), postsData.getTweets_sata().get(0).getTweet()),
-                new SwipeItem(1, postsData.getTweets_sata().get(1).getUser(), postsData.getTweets_sata().get(1).getTweet()),
-                new SwipeItem(2, postsData.getTweets_sata().get(2).getUser(), postsData.getTweets_sata().get(2).getTweet()),
-                new SwipeItem(3, postsData.getTweets_sata().get(3).getUser(), postsData.getTweets_sata().get(3).getTweet()),
-                new SwipeItem(4, postsData.getTweets_sata().get(4).getUser(), postsData.getTweets_sata().get(4).getTweet())
+                new SwipeItem(1, postsData.getTweets_sata().get(1).getUser(), postsData.getTweets_sata().get(1).getTweet())
+               // new SwipeItem(2, postsData.getTweets_sata().get(2).getUser(), postsData.getTweets_sata().get(2).getTweet()),
+               // new SwipeItem(3, postsData.getTweets_sata().get(3).getUser(), postsData.getTweets_sata().get(3).getTweet())
+                // new SwipeItem(4, postsData.getTweets_sata().get(4).getUser(), postsData.getTweets_sata().get(4).getTweet())
         );
 
         /*Animation animation;

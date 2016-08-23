@@ -44,6 +44,12 @@ public class DBHelper {
                 long checked = newsTable.addColumn(ColumnType.BOOLEAN, "checked");
                 version++;
             }
+
+            if(version == 2){
+                Table newsTable = realm.getTable(NewsTrend.class);
+                long arch_status = newsTable.addColumn(ColumnType.INTEGER, "arch_status");
+                version++;
+            }
             return version;
         }
     }
