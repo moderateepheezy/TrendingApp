@@ -27,8 +27,8 @@ public interface RetrofitInterface {
     void getTrends(Callback<TrendList> cb);
 
 
-    @GET("/demo/yql/events")
-    void getEventsPost(Callback<EventListItem> cb);
+    @GET("/demo/yql/events/{user_id}")
+    void getEventsPost(@Path("user_id")String user_id, Callback<EventListItem> cb);
 
     @GET("/demo/yql/users/{user_id}/news/preferences")
     void getNewsPosts(@Path("user_id")String user_id, @Query("value")String preference, Callback<NewsTrendList> cb);
@@ -38,6 +38,12 @@ public interface RetrofitInterface {
 
     @GET("/demo/yql/news/like/{user_id}/{news_id}")
     void like(@Path("news_id") Integer newsItemId, @Path("user_id") String userId, Callback<ReadStatus> status);
+
+    @GET("/demo/yql/events/like/{user_id}/{news_id}")
+    void likeEvents(@Path("news_id") String newsItemId, @Path("user_id") String userId, Callback<ReadStatus> status);
+
+    @GET("/demo/yql/videos/like/{user_id}/{news_id}")
+    void likeVideos(@Path("news_id") String newsItemId, @Path("user_id") String userId, Callback<ReadStatus> status);
 
     @GET("/demo/yql/news/dislike/{user_id}/{news_id}")
     void unlike(@Path("news_id") Integer newsItemId, @Path("user_id") String userId, Callback<ReadStatus> status);

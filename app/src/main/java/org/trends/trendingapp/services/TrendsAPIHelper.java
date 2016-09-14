@@ -35,8 +35,8 @@ public class TrendsAPIHelper {
                     Realm realm = Realm.getDefaultInstance();
                     realm.beginTransaction();
 
-                    realm.clear(TrendList.class);
-                    realm.clear(Trends.class);
+                    realm.delete(TrendList.class);
+                    realm.delete(Trends.class);
 
                     realm.copyToRealm(realmList);
 

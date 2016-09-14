@@ -18,29 +18,51 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sackcentury.shinebuttonlib.ShineButton;
+import com.squareup.okhttp.OkHttpClient;
 import com.squareup.picasso.Picasso;
 
 import org.trends.trendingapp.R;
 import org.trends.trendingapp.activities.MainActivity;
 import org.trends.trendingapp.activities.VideoViewActivity;
 import org.trends.trendingapp.customviews.RobotoTextView;
+import org.trends.trendingapp.models.ReadStatus;
+import org.trends.trendingapp.models.User;
 import org.trends.trendingapp.models.VideoCategoryInfo;
+import org.trends.trendingapp.services.RetrofitInterface;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.OkClient;
+import retrofit.client.Response;
 
 public class VideoCategoryRecyclerAdapter extends RecyclerView.Adapter<VideoCategoryRecyclerAdapter.ViewHolder> {
     private List<VideoCategoryInfo> mVideoCategoryInfo;
     private int itemLayout;
     public static Context context;
+    private User user;
+    private String fbid;
+    private RetrofitInterface restApi;
+    ArrayList<Boolean> positionArray;
 
-    public VideoCategoryRecyclerAdapter(Context contex, List<VideoCategoryInfo> log, int itemLayout) {
+    public VideoCategoryRecyclerAdapter(Context contex, List<VideoCategoryInfo> log, int itemLayout, User user) {
         context = contex;
         this.mVideoCategoryInfo = log;
         this.itemLayout = itemLayout;
+        this.user = user;
+
+        positionArray = new  ArrayList<>(log.size());
+        for(int i =0;i<log.size();i++){
+            positionArray.add(false);
+        }
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        fbid = user.getId();
         View v = LayoutInflater.from(parent.getContext()).inflate(itemLayout, parent, false);
         return new ViewHolder(v);
     }
@@ -61,6 +83,29 @@ public class VideoCategoryRecyclerAdapter extends RecyclerView.Adapter<VideoCate
 
         if (holder.porterShapeImageView3 != null)
             holder.porterShapeImageView3.init(mainActivity);
+
+        holder.tvNewsCountLike.setText(""+ item.getLike_count());
+
+        if (item.getLike_status() == 1) {
+            holder.ivLike.setImageResource(R.drawable.kalp_dolu_kucuk);
+        } else {
+            holder.ivLike.setImageResource(R.drawable.kalp_bos_kucuk);
+        }
+
+        holder.ivLike.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(View view, boolean checked) {
+                if (checked) {
+                    like(item.getId());
+                    holder.tvNewsCountLike.setText("" + (Integer.parseInt(holder.tvNewsCountLike.getText().toString()) + 1));
+                   // positionArray.set(position, true);
+                } else {
+                    like(item.getId());
+                    holder.tvNewsCountLike.setText("" + (Integer.parseInt(holder.tvNewsCountLike.getText().toString()) - 1));
+                 //   positionArray.set(position, false);
+                }
+            }
+        });
 
         holder.tvNewsTitle.setText(item.getTitle());
         holder.tvNewsShortText.setText(item.getDescription());
@@ -87,12 +132,12 @@ public class VideoCategoryRecyclerAdapter extends RecyclerView.Adapter<VideoCate
             }
         });
 
-       holder.porterShapeImageView3.setOnClickListener(new View.OnClickListener() {
+       /*holder.porterShapeImageView3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.e("GDDD", "click");
             }
-        });
+        });*/
     }
 
     private int convertDpToPx(int dp) {
@@ -137,9 +182,8 @@ public class VideoCategoryRecyclerAdapter extends RecyclerView.Adapter<VideoCate
         public ImageView ivShare;
 
         public ImageView ivFavorite;
-        public ImageView ivLike;
+        public ShineButton ivLike;
 
-        public TextView tvCountPageView;
         public TextView tvNewsCountLike;
 
         public ShineButton porterShapeImageView3;
@@ -161,13 +205,43 @@ public class VideoCategoryRecyclerAdapter extends RecyclerView.Adapter<VideoCate
             tvNewsDate = (RobotoTextView) itemView.findViewById(R.id.tvNewsDate);
 
             ivFavorite = (ImageView) itemView.findViewById(R.id.ivFavorite);
-            ivLike = (ImageView) itemView.findViewById(R.id.ivLike);
+            ivLike = (ShineButton) itemView.findViewById(R.id.ivLike);
 
             tvNewsCountLike = (TextView) itemView.findViewById(R.id.tvNewsCountLike);
-            tvCountPageView = (TextView) itemView.findViewById(R.id.tvCountPageView);
 
-            porterShapeImageView3 = (ShineButton) itemView.findViewById(R.id.po_image3);
+            ivLike.setOnCheckStateChangeListener(null);
 
         }
+
+    }
+
+    private void like(final String newsItemId) {
+        setupRestClient();
+        Log.e("logfb", "hunk" + fbid);
+        restApi.likeVideos(newsItemId, fbid, new Callback<ReadStatus>() {
+            @Override
+            public void success(ReadStatus readStatus, Response response) {
+                Log.e("logLike", "liked, id:" + newsItemId);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e("logLike", "fail like");
+
+            }
+        });
+
+    }
+
+
+    private void setupRestClient() {
+        RestAdapter.Builder builder = new RestAdapter.Builder()
+                .setEndpoint("http://voice.atp-sevas.com")
+                .setClient(new OkClient(new OkHttpClient()))
+                .setLogLevel(RestAdapter.LogLevel.FULL);
+
+        RestAdapter restAdapter = builder.build();
+
+        restApi = restAdapter.create(RetrofitInterface.class);
     }
 }

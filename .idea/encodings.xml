@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/app/src/main/java/org/trends/trendingapp/activities/VideoViewActivity.java" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/org/trends/trendingapp/adapters/VideoCategoryRecyclerAdapter.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/org/trends/trendingapp/adapters/VideoNotLoginAdapter.java" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/org/trends/trendingapp/models/VideoCategoryInfo.java" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/drawable-mdpi/parrot.png" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_video_view.xml" charset="windows-1251" />

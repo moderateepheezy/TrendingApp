@@ -21,10 +21,10 @@ public class EventsAPIHelper {
 
     private static final String TAG = EventsAPIHelper.class.getSimpleName();
 
-    public static void getPosts(final Context context) {
+    public static void getPosts(String fbid, final Context context) {
 
         RetrofitInterface retrofitInterface = BaseClient.getRetrofitInterface();
-        retrofitInterface.getEventsPost( new Callback<EventListItem>() {
+        retrofitInterface.getEventsPost(fbid,  new Callback<EventListItem>() {
             @Override
             public void success(EventListItem postsDataWrapper, Response response) {
 
@@ -35,8 +35,8 @@ public class EventsAPIHelper {
                     Realm realm = Realm.getDefaultInstance();
                     realm.beginTransaction();
 
-                    realm.clear(EventListItem.class);
-                    realm.clear(Datum.class);
+                    realm.delete(EventListItem.class);
+                    realm.delete(Datum.class);
 
                     realm.copyToRealm(realmList);
 

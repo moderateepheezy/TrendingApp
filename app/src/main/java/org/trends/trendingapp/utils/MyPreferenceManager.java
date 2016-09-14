@@ -92,12 +92,30 @@ public class MyPreferenceManager {
         editor.commit();
     }
 
-    public void setFirstTimeLaunch(boolean isFirstTime) {
-        editor.putBoolean(IS_FIRST_TIME_LAUNCH, isFirstTime);
-        editor.commit();
+
+    public int increaseNewsLikeCount(int news_id, int like_count){
+        int defaultValue = pref.getInt("count_key"+news_id,like_count);
+        ++defaultValue;
+        editor.putInt("count_key"+news_id,defaultValue).commit();
+        int count = pref.getInt("count_key",like_count);
+        return count;
     }
 
-    public boolean isFirstTimeLaunch() {
-        return pref.getBoolean(IS_FIRST_TIME_LAUNCH, true);
+    public int decreaseNewsUnlikeCount(int news_id){
+        int defaultValue = pref.getInt("count_key"+news_id, 0);
+        --defaultValue;
+        editor.putInt("count_key"+news_id,defaultValue).commit();
+        int count = pref.getInt("count_key"+news_id,0);
+        return count;
     }
+
+    public int getnewLikeCount(int news_id, int like_count){
+        int count = pref.getInt("count_key"+news_id,like_count);
+        return count;
+    }
+
+    public void setNewsLikeCount(int news_id, int like_count){
+        editor.putInt("count_key"+news_id, like_count).commit();
+    }
+
 }

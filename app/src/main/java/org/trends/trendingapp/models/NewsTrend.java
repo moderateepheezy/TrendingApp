@@ -24,6 +24,7 @@ public class NewsTrend extends RealmObject {
     private int news_id;
     private int arch_status;
     private boolean checked;
+    private boolean isFaved;
 
 
     /* Requires an empty constructor */
@@ -48,6 +49,15 @@ public class NewsTrend extends RealmObject {
         this.read_count = postsData.getRead_count();
         this.arch_status = postsData.getArch_status();
         this.checked = postsData.isChecked();
+        this.isFaved = postsData.isFaved();
+    }
+
+    public boolean isFaved() {
+        return isFaved;
+    }
+
+    public void setFaved(boolean faved) {
+        isFaved = faved;
     }
 
     public boolean isChecked() {

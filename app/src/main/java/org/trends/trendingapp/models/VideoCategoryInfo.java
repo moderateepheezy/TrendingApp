@@ -8,6 +8,25 @@ public class VideoCategoryInfo {
     private String description;
     private String published_at;
 
+    private int like_count;
+    private int like_status;
+
+
+    public int getLike_count() {
+        return like_count;
+    }
+
+    public void setLike_count(int like_count) {
+        this.like_count = like_count;
+    }
+
+    public int getLike_status() {
+        return like_status;
+    }
+
+    public void setLike_status(int like_status) {
+        this.like_status = like_status;
+    }
 
     public String getDescription() {
         return description;

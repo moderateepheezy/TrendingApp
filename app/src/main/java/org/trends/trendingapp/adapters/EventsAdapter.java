@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,14 +22,26 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.sackcentury.shinebuttonlib.ShineButton;
+import com.squareup.okhttp.OkHttpClient;
 import com.squareup.picasso.Picasso;
 
 import org.trends.trendingapp.R;
 import org.trends.trendingapp.customviews.RobotoTextView;
 import org.trends.trendingapp.models.Datum;
 import org.trends.trendingapp.models.NewsTrend;
+import org.trends.trendingapp.models.ReadStatus;
+import org.trends.trendingapp.models.User;
+import org.trends.trendingapp.services.RetrofitInterface;
+
+import java.util.ArrayList;
 
 import io.realm.RealmResults;
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.OkClient;
+import retrofit.client.Response;
 
 public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAdapter.PostsViewHolder> {
 
@@ -36,17 +49,21 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
     public Context context;
     public EventListener eventListener;
 
-    static boolean up, down = false;
+    private RetrofitInterface restApi;
 
-    public EventsAdapter(Context context, RealmResults<Datum> realmResults, boolean automaticUpdate) {
+    private String fbid;
+    private User user;
+    ArrayList<Boolean> positionArray;
+
+    public EventsAdapter(Context context, RealmResults<Datum> realmResults, boolean automaticUpdate, User user) {
         super(context, realmResults, automaticUpdate);
         this.realmResults = realmResults;
+        this.user = user;
         this.context = context;
-    }
-
-
-    public void eventList(RealmResults<Datum> realmResults){
-        this.realmResults = realmResults;
+        positionArray = new  ArrayList<>(realmResults.size());
+        for(int i =0;i<realmResults.size();i++){
+            positionArray.add(false);
+        }
     }
 
     public void setEventListener(EventListener eventListener) {
@@ -55,13 +72,14 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
 
     @Override
     public PostsViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        fbid = user.getId();
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_events, viewGroup, false);
         PostsViewHolder mediaViewHolder = new PostsViewHolder(v);
         return mediaViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(final PostsViewHolder holder, int position) {
+    public void onBindViewHolder(final PostsViewHolder holder, final int position) {
 
         final Datum postsData = getItem(position);
 
@@ -75,8 +93,13 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
         String eventName = postsData.getName();
         String eventDate = postsData.getStart();
 
+        holder.tvNewsCountLike.setText(""+ postsData.getLike_count());
 
-//        String formattedDate = DateUtil.formatDate(calendar, DateUtil.DateFormat.COMPLETE_DATE_FORMAT);
+        if (postsData.getLike_status() == 1) {
+            holder.ivLike.setImageResource(R.drawable.kalp_dolu_kucuk);
+        } else {
+            holder.ivLike.setImageResource(R.drawable.kalp_bos_kucuk);
+        }
 
         Spanned decodedTitle = Html.fromHtml(eventName);
 
@@ -93,10 +116,6 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
                 .centerCrop()
                 .placeholder(R.drawable.tw_logo)
                 .into(holder.mDisplayGeneratedImage);
-
-        /*Animation animation;
-        animation = AnimationUtils.loadAnimation(context, R.anim.fade_in);
-        holder.postContentHolder.startAnimation(animation);*/
 
         holder.postContentHolder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +135,22 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
                 sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Trending App");
                 sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
                 context.startActivity(Intent.createChooser(sharingIntent, "Paylaş"));
+            }
+        });
+
+
+        holder.ivLike.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(View view, boolean checked) {
+                if (checked) {
+                    like(postsData.getId());
+                    holder.tvNewsCountLike.setText("" + (Integer.parseInt(holder.tvNewsCountLike.getText().toString()) + 1));
+                    positionArray.set(position, true);
+                } else {
+                    like(postsData.getId());
+                    holder.tvNewsCountLike.setText("" + (Integer.parseInt(holder.tvNewsCountLike.getText().toString()) - 1));
+                    positionArray.set(position, false);
+                }
             }
         });
 
@@ -158,6 +193,9 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
 
         public ImageView ivArrowLeft;
         public ImageView ivArrowRight;
+        public ShineButton ivLike;
+
+        public TextView tvNewsCountLike;
 
         PostsViewHolder(View itemView) {
             super(itemView);
@@ -174,6 +212,10 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
             sourceName = (RobotoTextView) itemView.findViewById(R.id.sourceName);
             sourceImage = (ImageView) itemView.findViewById(R.id.sourceImg);
             share = (ImageView) itemView.findViewById(R.id.ivShare);
+            ivLike = (ShineButton) itemView.findViewById(R.id.ivLike);
+
+            tvNewsCountLike = (TextView) itemView.findViewById(R.id.tvNewsCountLike);
+            ivLike.setOnCheckStateChangeListener(null);
         }
     }
 
@@ -186,6 +228,35 @@ public class EventsAdapter extends RealmBaseRecyclerViewAdapter<Datum, EventsAda
         return position;
     }
 
+    private void like( final String newsItemId) {
+        setupRestClient();
+        Log.e("logfb", "hunk" + fbid);
+        restApi.likeEvents(newsItemId, fbid, new Callback<ReadStatus>() {
+            @Override
+            public void success(ReadStatus readStatus, Response response) {
+                Log.e("logLike", "liked, id:" + newsItemId);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e("logLike", "fail like");
+
+            }
+        });
+
+    }
+
+
+    private void setupRestClient() {
+        RestAdapter.Builder builder = new RestAdapter.Builder()
+                .setEndpoint("http://voice.atp-sevas.com")
+                .setClient(new OkClient(new OkHttpClient()))
+                .setLogLevel(RestAdapter.LogLevel.FULL);
+
+        RestAdapter restAdapter = builder.build();
+
+        restApi = restAdapter.create(RetrofitInterface.class);
+    }
 
 }
 

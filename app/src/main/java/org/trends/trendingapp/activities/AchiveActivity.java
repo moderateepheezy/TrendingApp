@@ -43,7 +43,7 @@ public class AchiveActivity extends AppCompatActivity implements
 
     RealmChangeListener realmChangeListener = new RealmChangeListener() {
         @Override
-        public void onChange() {
+        public void onChange(Object element) {
             adapter.swapData(getPostsFromDb());
         }
     };
@@ -201,6 +201,6 @@ public class AchiveActivity extends AppCompatActivity implements
         query = query.toLowerCase();
 
         return realm.where(NewsTrendArchived.class)
-                .contains("title", query, false).findAll();
+                .contains("title", query).findAll();
     }
 }

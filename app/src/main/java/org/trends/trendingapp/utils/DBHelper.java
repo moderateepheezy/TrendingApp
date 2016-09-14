@@ -2,13 +2,11 @@ package org.trends.trendingapp.utils;
 
 import android.content.Context;
 
-import org.trends.trendingapp.models.NewsTrend;
 
-import io.realm.Realm;
+import io.realm.DynamicRealm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmMigration;
-import io.realm.internal.ColumnType;
-import io.realm.internal.Table;
+import io.realm.RealmSchema;
 
 /**
  * Created by SimpuMind on 5/19/16.
@@ -30,27 +28,65 @@ public class DBHelper {
 
     public static class MyMigration implements RealmMigration{
 
+
         @Override
-        public long execute(Realm realm, long version) {
+        public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
+            RealmSchema schema = realm.getSchema();
 
-            if (version == 0) {
-                Table newsTable = realm.getTable(NewsTrend.class);
-                long arch_status = newsTable.addColumn(ColumnType.INTEGER, "arch_status");
-                version++;
+            if(oldVersion == 0){
+                schema.get("NewsTrend")
+                        .addField("arch_status", int.class);
+                oldVersion++;
             }
 
-            if(version == 1){
-                Table newsTable = realm.getTable(NewsTrend.class);
-                long checked = newsTable.addColumn(ColumnType.BOOLEAN, "checked");
-                version++;
+            if(oldVersion == 1){
+                schema.get("NewsTrend")
+                        .addField("checked", boolean.class);
+                oldVersion++;
             }
 
-            if(version == 2){
-                Table newsTable = realm.getTable(NewsTrend.class);
-                long arch_status = newsTable.addColumn(ColumnType.INTEGER, "arch_status");
-                version++;
+            if(oldVersion == 2){
+                schema.get("NewsTrend")
+                        .addField("isFaved", boolean.class);
+                oldVersion++;
             }
-            return version;
+
+            if(oldVersion == 3){
+                schema.get("Datum")
+                        .addField("like_count", int.class);
+                oldVersion++;
+            }
+
+            if(oldVersion == 4){
+                schema.get("Datum")
+                        .addField("like_status", int.class);
+                oldVersion++;
+            }
         }
     }
 }
+
+
+//if (version == 0) {
+//        Table newsTable = realm.getTable(NewsTrend.class);
+//        long arch_status = newsTable.addColumn(ColumnType.INTEGER, "arch_status");
+//        version++;
+//        }
+//
+//        if(version == 1){
+//        Table newsTable = realm.getTable(NewsTrend.class);
+//        long checked = newsTable.addColumn(ColumnType.BOOLEAN, "checked");
+//        version++;
+//        }
+//
+//        if(version == 2){
+//        Table newsTable = realm.getTable(NewsTrend.class);
+//        long arch_status = newsTable.addColumn(ColumnType.INTEGER, "arch_status");
+//        version++;
+//        }
+//
+//        if(version == 3){
+//        Table newsTable = realm.getTable(NewsTrend.class);
+//        long isFaved = newsTable.addColumn(ColumnType.BOOLEAN, "isFaved");
+//        }
+//        return version;

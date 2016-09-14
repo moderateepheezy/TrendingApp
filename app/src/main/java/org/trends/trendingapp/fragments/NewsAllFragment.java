@@ -57,7 +57,7 @@ public class NewsAllFragment extends Fragment implements  TestNewsNotLoginAdapte
 
     RealmChangeListener realmChangeListener = new RealmChangeListener() {
         @Override
-        public void onChange() {
+        public void onChange(Object element) {
             adapter.swapData(getPostsFromDb());
         }
     };

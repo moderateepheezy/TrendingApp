@@ -12,6 +12,8 @@ public class Datum extends RealmObject {
     private String img_name;
     private String type;
     private String url;
+    private int like_count;
+    private int like_status;
 
     public Datum() {
     }
@@ -23,6 +25,24 @@ public class Datum extends RealmObject {
         this.type = postsData.getType();
         this.img_name = postsData.getImg_name();
         this.url = postsData.getUrl();
+        this.like_count = postsData.getLike_count();
+        this.like_status = postsData.getLike_status();
+    }
+
+    public int getLike_count() {
+        return like_count;
+    }
+
+    public void setLike_count(int like_count) {
+        this.like_count = like_count;
+    }
+
+    public int getLike_status() {
+        return like_status;
+    }
+
+    public void setLike_status(int like_status) {
+        this.like_status = like_status;
     }
 
     public String getUrl() {

@@ -39,8 +39,8 @@ public class NewsArchivedAPIHelper {
                     Realm realm = Realm.getDefaultInstance();
                     realm.beginTransaction();
 
-                    realm.clear(NewsTrendArchivedList.class);
-                    realm.clear(NewsTrendArchived.class);
+                    realm.delete(NewsTrendArchivedList.class);
+                    realm.delete(NewsTrendArchived.class);
 
                     realm.copyToRealm(realmList);
 

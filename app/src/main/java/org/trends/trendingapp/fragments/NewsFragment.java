@@ -13,17 +13,25 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.TransitionInflater;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.sackcentury.shinebuttonlib.ShineButton;
+import com.squareup.okhttp.OkHttpClient;
 import com.squareup.otto.Subscribe;
+import com.thefinestartist.finestwebview.FinestWebView;
 
 import org.trends.trendingapp.R;
 import org.trends.trendingapp.TrendingApplication;
 import org.trends.trendingapp.adapters.TestNewsAdapter;
 import org.trends.trendingapp.adapters.TestNewsNotLoginAdapter;
 import org.trends.trendingapp.models.NewsTrend;
+import org.trends.trendingapp.models.ReadStatus;
 import org.trends.trendingapp.models.User;
 import org.trends.trendingapp.services.NewsAPIHelper;
 import org.trends.trendingapp.services.RetrofitInterface;
@@ -35,6 +43,11 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.OkClient;
+import retrofit.client.Response;
 
 /**
  * Created by SimpuMind on 5/20/16.
@@ -45,8 +58,12 @@ public class NewsFragment extends Fragment implements
     private RecyclerView recyclerView;
     protected Realm realm;
 
+    private  boolean like;
+    private  static boolean archive;
+
     public SwipeRefreshLayout refresh;
 
+    private RetrofitInterface restApi;
     public TestNewsAdapter adapter;
     TestNewsNotLoginAdapter notLoginAdapter;
     private LinearLayoutManager linearLayoutManager;
@@ -62,8 +79,15 @@ public class NewsFragment extends Fragment implements
 
     RealmChangeListener realmChangeListener = new RealmChangeListener() {
         @Override
-        public void onChange() {
-            adapter.swapData(getPostsFromDb());
+        public void onChange(Object element) {
+                adapter.swapData(getPostsFromDb());
+        }
+    };
+
+    RealmChangeListener notLogrealmChangeListener = new RealmChangeListener() {
+        @Override
+        public void onChange(Object element) {
+                notLoginAdapter.swapData(getPostsFromDb());
         }
     };
 
@@ -84,13 +108,15 @@ public class NewsFragment extends Fragment implements
 
             fbid = user.getId();
             NewsAPIHelper.getPosts(fbid, x, getActivity());
+            realm.addChangeListener(realmChangeListener);
 
         }else{
             NewsAPIHelper.getPosts("34", "default", getActivity());
+            realm.addChangeListener(notLogrealmChangeListener);
         }
 
          /* Used when the data set is changed and this notifies the database to update the information */
-        realm.addChangeListener(realmChangeListener);
+       // realm.addChangeListener(realmChangeListener);
 
     }
 
@@ -196,7 +222,34 @@ public class NewsFragment extends Fragment implements
     */
     @Override
     public void onItemClick(View view, final NewsTrend postsData){
+        loadNewsInWebView(postsData);
+    }
 
+
+    @Override
+    public void onLikeClick(View view, NewsTrend postData, TextView tvNewsCountLike,
+                            ImageView ivLike, boolean check) {
+        like(postData.getNews_id());
+    }
+
+    @Override
+    public void onFavClick(View view, NewsTrend postsData, ImageView ivFavorite, boolean isAchive) {
+
+        if (!isAchive) {
+            archive(postsData.getNews_id(), postsData.getExt_date());
+            ivFavorite.setImageResource(R.drawable.yildiz_dolu_kucuk);
+            isAchive = true;
+            realm.beginTransaction();
+            postsData.setFaved(true);
+            realm.commitTransaction();
+        } else {
+            unArchive(postsData.getNews_id());
+            ivFavorite.setImageResource(R.drawable.yildiz_bos_kucuk);
+            isAchive = false;
+            realm.beginTransaction();
+            postsData.setFaved(false);
+            realm.commitTransaction();
+        }
     }
 
 
@@ -241,4 +294,128 @@ public class NewsFragment extends Fragment implements
     }
 
 
+    private void like(final int newsItemId) {
+        setupRestClient();
+        Log.e("logfb", "hunk" + fbid);
+        restApi.like(newsItemId, fbid, new Callback<ReadStatus>() {
+            @Override
+            public void success(ReadStatus readStatus, Response response) {
+                Log.e("logLike", "liked, id:" + newsItemId);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e("logLike", "fail like");
+
+            }
+        });
+
+    }
+
+    private void sendReadInfo(int id, String ext_date) {
+        setupRestClient();
+
+        restApi.sendReadInfo(id, fbid, ext_date, new Callback<ReadStatus>() {
+            @Override
+            public void success(ReadStatus readStatus, Response response) {
+                Log.d("logRead", "Send info send: " + readStatus.isSuccess());
+
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.d("logRead", "Send info failed");
+
+            }
+        });
+    }
+
+    private void unlike(final int newsItemId) {
+        setupRestClient();
+
+        restApi.unlike(newsItemId, fbid, new Callback<ReadStatus>() {
+            @Override
+            public void success(ReadStatus readStatus, Response response) {
+                Log.e("logLike", "unliked, id:" + newsItemId);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e("logLike", "fail unlike");
+            }
+        });
+
+    }
+
+    private void archive(final int newsItemId, String ext_date){
+        setupRestClient();
+
+        restApi.sendArchiveInfo(newsItemId, fbid, ext_date, new Callback<ReadStatus>() {
+            @Override
+            public void success(ReadStatus readStatus, Response response) {
+                Log.e("logArchive", "archive id:" + newsItemId);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e("logArchive", "fail archive");
+            }
+        });
+    }
+
+    private  void unArchive(final  int newsItemId){
+        setupRestClient();
+
+        restApi.sendUnArchiveInfo(newsItemId, fbid, new Callback<ReadStatus>() {
+            @Override
+            public void success(ReadStatus readStatus, Response response) {
+                Log.e("logUnArchive", "archive id:" + newsItemId);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e("logUnArchive", "fail unArchive");
+            }
+        });
+    }
+
+    private void loadNewsInWebView(NewsTrend postsData) {
+        sendReadInfo(postsData.getNews_id(), postsData.getExt_date());
+                /*Intent in = new Intent(context, WebViewActivity.class);
+                in.putExtra(WebViewActivity.ARG_SEARCH_REQUEST, postsData.getHref());
+                context.startActivity(in);*/
+        new FinestWebView.Builder(getActivity())
+                .theme(R.style.FinestWebViewTheme)
+                .titleDefault("What's Trending")
+                .showUrl(false)
+                .statusBarColorRes(R.color.bluePrimaryDark)
+                .toolbarColorRes(R.color.colorPrimary)
+                .titleColorRes(R.color.finestWhite)
+                .urlColorRes(R.color.colorPrimaryDark)
+                .iconDefaultColorRes(R.color.finestWhite)
+                .progressBarColorRes(R.color.PrimaryDarkColor)
+                .stringResCopiedToClipboard(R.string.copied_to_clipboard)
+                .stringResCopiedToClipboard(R.string.copied_to_clipboard)
+                .stringResCopiedToClipboard(R.string.copied_to_clipboard)
+                .showSwipeRefreshLayout(true)
+                .swipeRefreshColorRes(R.color.bluePrimaryDark)
+                .menuSelector(R.drawable.selector_light_theme)
+                .menuTextGravity(Gravity.CENTER)
+                .menuTextPaddingRightRes(R.dimen.defaultMenuTextPaddingLeft)
+                .dividerHeight(0)
+                .gradientDivider(false)
+                .setCustomAnimations(R.anim.slide_up, R.anim.hold, R.anim.hold, R.anim.slide_down)
+                .show(postsData.getHref());
+    }
+
+    private void setupRestClient() {
+        RestAdapter.Builder builder = new RestAdapter.Builder()
+                .setEndpoint("http://voice.atp-sevas.com")
+                .setClient(new OkClient(new OkHttpClient()))
+                .setLogLevel(RestAdapter.LogLevel.FULL);
+
+        RestAdapter restAdapter = builder.build();
+
+        restApi = restAdapter.create(RetrofitInterface.class);
+    }
 }

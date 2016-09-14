@@ -25,9 +25,12 @@ import android.widget.Toast;
 import com.squareup.otto.Subscribe;
 
 import org.trends.trendingapp.R;
+import org.trends.trendingapp.TrendingApplication;
 import org.trends.trendingapp.activities.EventDetailedActivity;
 import org.trends.trendingapp.adapters.EventsAdapter;
+import org.trends.trendingapp.adapters.EventsNotLoginAdapter;
 import org.trends.trendingapp.models.Datum;
+import org.trends.trendingapp.models.User;
 import org.trends.trendingapp.services.EventsAPIHelper;
 import org.trends.trendingapp.utils.AppConstants;
 import org.trends.trendingapp.utils.EventBusSingleton;
@@ -41,7 +44,7 @@ import io.realm.RealmResults;
 /**
  * Created by SimpuMind on 5/20/16.
  */
-public class EventsFragment extends Fragment implements EventsAdapter.EventListener{
+public class EventsFragment extends Fragment implements EventsAdapter.EventListener, EventsNotLoginAdapter.EventListener{
 
     private RecyclerView recyclerView;
     protected Realm realm;
@@ -49,19 +52,29 @@ public class EventsFragment extends Fragment implements EventsAdapter.EventListe
     public SwipeRefreshLayout refresh;
 
     public EventsAdapter adapter;
+    public EventsNotLoginAdapter notLoginAdapter;
 
     private LinearLayoutManager linearLayoutManager;
 
     public String fbid;
-    public SharedPreferences settings;
+
+    private static User user;
 
     @Bind(R.id.landingPage)
     public ViewGroup viewGroup;
 
+
     RealmChangeListener realmChangeListener = new RealmChangeListener() {
         @Override
-        public void onChange() {
+        public void onChange(Object element) {
             adapter.swapData(getPostsFromDb());
+        }
+    };
+
+    RealmChangeListener notLogrealmChangeListener = new RealmChangeListener() {
+        @Override
+        public void onChange(Object element) {
+            notLoginAdapter.swapData(getPostsFromDb());
         }
     };
 
@@ -75,14 +88,18 @@ public class EventsFragment extends Fragment implements EventsAdapter.EventListe
         }
         ButterKnife.bind(getActivity());
 
-        settings = getActivity().getSharedPreferences("KEY_NAME",
-                getActivity().MODE_PRIVATE);
-        fbid = settings.getString("fbid", "");
-
-        EventsAPIHelper.getPosts(getActivity());
+        user = TrendingApplication.getInstance().getPrefManager().getUser();
+        if(user != null){
+            fbid = user.getId();
+            EventsAPIHelper.getPosts(fbid, getActivity());
+            realm.addChangeListener(realmChangeListener);
+        }else{
+            EventsAPIHelper.getPosts("34", getActivity());
+            realm.addChangeListener(notLogrealmChangeListener);
+        }
 
         /* Used when the data set is changed and this notifies the database to update the information */
-        realm.addChangeListener(realmChangeListener);
+        //realm.addChangeListener(realmChangeListener);
 
        /* Animation animation;
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in);
@@ -97,8 +114,12 @@ public class EventsFragment extends Fragment implements EventsAdapter.EventListe
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                EventsAPIHelper.getPosts(getActivity());
-
+                if(user != null){
+                    fbid = user.getId();
+                    EventsAPIHelper.getPosts(fbid, getActivity());
+                }else{
+                    EventsAPIHelper.getPosts("34", getActivity());
+                }
                 (new Handler()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -151,9 +172,15 @@ public class EventsFragment extends Fragment implements EventsAdapter.EventListe
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new EventsAdapter(getActivity(), realmResults, true);
-        adapter.setEventListener(this);
-        recyclerView.setAdapter(adapter);
+        if(user != null) {
+            adapter = new EventsAdapter(getActivity(), realmResults, true, user);
+            adapter.setEventListener(this);
+            recyclerView.setAdapter(adapter);
+        }else{
+            notLoginAdapter = new EventsNotLoginAdapter(getActivity(), realmResults, true);
+            notLoginAdapter.setEventListener(this);
+            recyclerView.setAdapter(notLoginAdapter);
+        }
     }
 
     @Subscribe

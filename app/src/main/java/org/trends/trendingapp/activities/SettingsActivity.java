@@ -13,9 +13,22 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.squareup.okhttp.OkHttpClient;
+
 import org.trends.trendingapp.R;
 import org.trends.trendingapp.TrendingApplication;
+import org.trends.trendingapp.models.FeedBack;
+import org.trends.trendingapp.models.ReadStatus;
 import org.trends.trendingapp.models.User;
+import org.trends.trendingapp.services.RetrofitInterface;
+
+import java.util.Set;
+
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.OkClient;
+import retrofit.client.Response;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -27,6 +40,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     private Button suggest;
     private EditText suggest_box;
+
+    RetrofitInterface restApi;
 
 
     private String fbid, builString;
@@ -50,14 +65,13 @@ public class SettingsActivity extends AppCompatActivity {
 
         suggest = (Button) findViewById(R.id.suggest);
         suggest_box = (EditText) findViewById(R.id.sugesst_box);
-        suggest_box.setError("Please enter data");
-
         builString = suggest_box.getText().toString();
 
         suggest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendEmail();
+                sendEmail(suggest_box.getText().toString());
+                suggest_box.setText("");
             }
         });
 
@@ -109,20 +123,12 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    public void sendEmail(){
-        Intent email = new Intent(Intent.ACTION_SEND);
-        email.putExtra(Intent.EXTRA_EMAIL, new String[] {
-                "moderateepheezy@gmail.com", "tofunmibabatunde@gmail.com"
-        });
-        // email.putExtra(Intent.EXTRA_CC, new String[]{ to});
-        // email.putExtra(Intent.EXTRA_BCC, new String[]{to});
-        email.putExtra(Intent.EXTRA_SUBJECT, "FEED BACK ON PARROT");
-        email.putExtra(Intent.EXTRA_TEXT, builString);
-
-        // need this to prompts email client only
-        email.setType("message/rfc822");
-
-        startActivity(Intent.createChooser(email, "Choose an Email client :"));
+    public void sendEmail(String build){
+        if(!build.isEmpty()){
+            sendFeedback(build, 1, 1, 1,1);
+        }else {
+            Toast.makeText(SettingsActivity.this, "The input feild should not be empty! ", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void setChangestate(String preName, boolean isChecked){
@@ -146,6 +152,36 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportFragmentManager().popBackStack();
         super.onBackPressed();
         return true;
+    }
+
+    private void sendFeedback(String general, float design,
+                              float overall, float ease,float content){
+        setupRestClient();
+
+        restApi.sendFeedback(content,overall,ease,design,general, new Callback<ReadStatus>() {
+            @Override
+            public void success(ReadStatus readStatus, Response response) {
+                Log.e("logLike", "Send feedback successful");
+                Toast.makeText(SettingsActivity.this, "Send feedback successful", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e("logLike", "Send feedback not successful \t" + error.toString() + "\t" + error.getUrl());
+            }
+        });
+    }
+
+
+    private void setupRestClient() {
+        RestAdapter.Builder builder = new RestAdapter.Builder()
+                .setEndpoint("http://voice.atp-sevas.com")
+                .setClient(new OkClient(new OkHttpClient()))
+                .setLogLevel(RestAdapter.LogLevel.FULL);
+
+        RestAdapter restAdapter = builder.build();
+
+        restApi = restAdapter.create(RetrofitInterface.class);
     }
 
 }

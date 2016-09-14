@@ -17,7 +17,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.trends.trendingapp.R;
+import org.trends.trendingapp.TrendingApplication;
 import org.trends.trendingapp.adapters.VideoCategoryRecyclerAdapter;
+import org.trends.trendingapp.adapters.VideoNotLoginAdapter;
+import org.trends.trendingapp.models.User;
 import org.trends.trendingapp.models.VideoCategoryInfo;
 
 import java.io.BufferedInputStream;
@@ -35,9 +38,12 @@ import java.util.List;
 public class VideoFragment extends Fragment{
 
     private VideoCategoryRecyclerAdapter videoRecyclerAdapter;
+    private VideoNotLoginAdapter videoNotLoginAdapter;
     private List<VideoCategoryInfo> videoList;
 
     public SwipeRefreshLayout refresh;
+
+    private User user;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,17 +54,28 @@ public class VideoFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.video_list_fragment, container, false);
         videoList = new ArrayList<>();
+        user = TrendingApplication.getInstance().getPrefManager().getUser();
         refresh = (SwipeRefreshLayout) v.findViewById(R.id.refresh);
         RecyclerView recycler = (RecyclerView) v.findViewById(R.id.recyclerView);
         recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
-        videoRecyclerAdapter = new VideoCategoryRecyclerAdapter(getActivity(), videoList, R.layout.row_videos);
-        recycler.setAdapter(videoRecyclerAdapter);
-        new LoadVideoData().execute("");
+        if(user != null) {
+            videoRecyclerAdapter = new VideoCategoryRecyclerAdapter(getActivity(), videoList, R.layout.row_videos, user);
+            recycler.setAdapter(videoRecyclerAdapter);
+            new LoadVideoDataLogin().execute("");
+        }else{
+            videoNotLoginAdapter = new VideoNotLoginAdapter(getActivity(), videoList, R.layout.row_videos);
+            recycler.setAdapter(videoRecyclerAdapter);
+            new LoadVideoData().execute("");
+        }
 
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new LoadVideoData().execute("");
+                if(user != null){
+                    new LoadVideoDataLogin().execute("");
+                }else {
+                    new LoadVideoData().execute("");
+                }
 
                 (new Handler()).postDelayed(new Runnable() {
                     @Override
@@ -75,7 +92,6 @@ public class VideoFragment extends Fragment{
 
     class LoadVideoData extends AsyncTask<String, String, String> {
         HttpURLConnection urlConnection;
-
         @Override
         protected String doInBackground(String... params) {
             StringBuilder result = new StringBuilder();
@@ -120,7 +136,64 @@ public class VideoFragment extends Fragment{
 
         @Override
         protected void onPostExecute(String result) {
+            videoNotLoginAdapter.notifyDataSetChanged();
+        }
+    }
+
+
+    class LoadVideoDataLogin extends AsyncTask<String, String, String> {
+        HttpURLConnection urlConnection;
+        @Override
+        protected String doInBackground(String... params) {
+            StringBuilder result = new StringBuilder();
+            try {
+                URL url = new URL("http://voice.atp-sevas.com/demo/yql/videos/" + user.getId());
+                urlConnection = (HttpURLConnection) url.openConnection();
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
+                }
+                try {
+                    JSONObject json = new JSONObject(result.toString());
+                    JSONArray items = json.getJSONArray("data");
+                    for (int i = 0; i < items.length(); i++) {
+                        JSONObject data = items.getJSONObject(i);
+                        String id = data.getString("id");
+                        String url1 = data.getString("url");
+                        String title = data.getString("title");
+                        String description = data.getString("description");
+                        String publish_at = data.getString("published_at");
+                        int like_count = data.getInt("like_count");
+                        int like_status = data.getInt("like_status");
+                        VideoCategoryInfo info = new VideoCategoryInfo();
+                        info.setLike_count(like_count);
+                        info.setLike_status(like_status);
+                        info.setId(id);
+                        info.setTitle(title);
+                        info.setPublished_at(publish_at);
+                        info.setImage(url1);
+                        info.setDescription(description);
+                        videoList.add(info);
+                    }
+                } catch (JSONException e) {
+                    Log.e("JSON_EXCEPTION", e.getMessage());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                urlConnection.disconnect();
+            }
+
+            return result.toString();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
             videoRecyclerAdapter.notifyDataSetChanged();
         }
     }
 }
+
+

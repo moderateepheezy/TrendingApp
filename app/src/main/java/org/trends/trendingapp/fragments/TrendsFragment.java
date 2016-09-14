@@ -58,7 +58,7 @@ public class TrendsFragment extends Fragment implements TrendsAdapter.EventListe
 
     RealmChangeListener realmChangeListener = new RealmChangeListener() {
         @Override
-        public void onChange() {
+        public void onChange(Object element) {
             adapter.swapData(getPostsFromDb());
         }
     };

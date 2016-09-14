@@ -117,13 +117,16 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true">
 
-                    <ImageView
+                    <com.sackcentury.shinebuttonlib.ShineButton
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_margin="10dp"
+                        android:layout_alignParentLeft="true"
                         android:id="@+id/ivLike"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:padding="10dp"
-                        android:src="@drawable/kalp_bos_kucuk" />
+                        app:btn_color="@android:color/darker_gray"
+                        app:btn_fill_color="@color/colorAccent"
+                        app:enable_flashing="true"
+                        app:siShape="@raw/heart" />
 
                     <TextView
                         android:id="@+id/tvNewsCountLike"
@@ -132,7 +135,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="-5dp"
                         android:layout_toRightOf="@id/ivLike"
-                        android:textColor="@color/colorAccent"
+                        android:textColor="@color/black"
                         android:textSize="12dp" />
 
                     <ImageView
@@ -144,29 +147,9 @@
                         android:padding="10dp"
                         android:src="@drawable/share_kucuk" />
 
-                    <com.sackcentury.shinebuttonlib.ShineButton
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_margin="10dp"
-                        android:layout_centerInParent="true"
-                        android:id="@+id/po_image3"
-                        app:btn_color="@android:color/darker_gray"
-                        app:btn_fill_color="#996699"
-                        app:enable_flashing="true"
-                        app:siShape="@raw/star" />
 
-                    <ImageView
-                        android:id="@+id/ivFavorite"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_toLeftOf="@id/ivShare"
-                        android:padding="10dp"
-                        android:visibility="gone"
-                        android:src="@drawable/yildiz_bos_kucuk" />
 
                 </RelativeLayout>
-
                 <View
                     android:id="@+id/vAboveIcons"
                     android:layout_width="match_parent"
